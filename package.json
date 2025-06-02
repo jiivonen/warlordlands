@@ -1,0 +1,15 @@
+{
+  "name": "warlordlands",
+  "version": "1.0.0",
+  "description": "Warlord Lands game",
+  "main": "warlords.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Joonas Iivonen",
+  "license": "CC-BY-NC-4.0",
+  "dependencies": {
+    "express": "^4.21.2"
+  },
+  "type": "module"
+}
