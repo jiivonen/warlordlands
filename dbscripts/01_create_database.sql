@@ -56,5 +56,17 @@ CREATE TABLE realm (
     INDEX idx_player_id (player_id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
 
+-- Create unit_type table
+CREATE TABLE unit_type (
+    type VARCHAR(50) PRIMARY KEY,
+    description TEXT NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
+
+-- Create keywords table
+CREATE TABLE keywords (
+    keyword VARCHAR(50) PRIMARY KEY,
+    description TEXT NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
+
 -- Add your table creation statements below this line
 -- Example table structure will be added in subsequent scripts 
