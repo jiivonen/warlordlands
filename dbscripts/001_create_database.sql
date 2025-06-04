@@ -66,7 +66,4 @@ CREATE TABLE unit_type (
 CREATE TABLE keywords (
     keyword VARCHAR(50) PRIMARY KEY,
     description TEXT NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
-
--- Add your table creation statements below this line
--- Example table structure will be added in subsequent scripts 
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci; 
