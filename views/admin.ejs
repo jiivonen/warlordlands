@@ -1,0 +1,28 @@
+<%
+    title = 'Dashboard';
+%>
+
+<h2>Admin Dashboard</h2>
+<p>Welcome to the Warlordlands administration panel. Select a table to manage its content.</p>
+
+<div class="grid">
+    <% tables.forEach(function(table) { %>
+        <div class="card">
+            <h3><%= table.displayName %></h3>
+            <p>Manage <%= table.displayName.toLowerCase() %> data</p>
+            <a href="/admin/<%= table.name %>" class="btn btn-primary">View & Edit</a>
+        </div>
+    <% }); %>
+</div>
+
+<style>
+    h2 {
+        margin-bottom: 0.5rem;
+        color: #2c3e50;
+    }
+    
+    p {
+        color: #7f8c8d;
+        margin-bottom: 2rem;
+    }
+</style>

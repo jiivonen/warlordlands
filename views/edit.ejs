@@ -1,0 +1,46 @@
+<%
+    title = 'Edit ' + displayName;
+%>
+
+<h2>Edit <%= displayName %></h2>
+
+<form method="POST" action="/admin/<%= tableName %>/edit/<%= record.id %>">
+    <% columns.forEach(function(column) { %>
+        <div class="form-group">
+            <label for="<%= column %>"><%= column %>:</label>
+            <% if (column === 'id') { %>
+                <input type="text" id="<%= column %>" name="<%= column %>" value="<%= record[column] %>" class="form-control" readonly>
+            <% } else if (typeof record[column] === 'boolean') { %>
+                <select id="<%= column %>" name="<%= column %>" class="form-control">
+                    <option value="1" <%= record[column] ? 'selected' : '' %>>Yes</option>
+                    <option value="0" <%= !record[column] ? 'selected' : '' %>>No</option>
+                </select>
+            <% } else if (column.includes('created_at') || column.includes('updated_at')) { %>
+                <input type="text" id="<%= column %>" name="<%= column %>" value="<%= record[column] %>" class="form-control" readonly>
+            <% } else { %>
+                <input type="text" id="<%= column %>" name="<%= column %>" value="<%= record[column] || '' %>" class="form-control">
+            <% } %>
+        </div>
+    <% }); %>
+    
+    <div style="margin-top: 2rem;">
+        <button type="submit" class="btn btn-success">Update Record</button>
+        <a href="/admin/<%= tableName %>" class="btn btn-primary">Cancel</a>
+    </div>
+</form>
+
+<style>
+    h2 {
+        margin-bottom: 1.5rem;
+        color: #2c3e50;
+    }
+    
+    form {
+        max-width: 600px;
+    }
+    
+    .form-control[readonly] {
+        background-color: #f8f9fa;
+        cursor: not-allowed;
+    }
+</style>

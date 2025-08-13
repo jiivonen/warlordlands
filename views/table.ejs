@@ -1,0 +1,62 @@
+<%
+    title = displayName;
+%>
+
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+    <h2><%= displayName %></h2>
+    <a href="/admin/<%= tableName %>/add" class="btn btn-success">Add New</a>
+</div>
+
+<% if (data.length === 0) { %>
+    <p>No records found in this table.</p>
+<% } else { %>
+    <div style="overflow-x: auto;">
+        <table class="table">
+            <thead>
+                <tr>
+                    <% columns.forEach(function(column) { %>
+                        <th><%= column %></th>
+                    <% }); %>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% data.forEach(function(row) { %>
+                    <tr>
+                        <% columns.forEach(function(column) { %>
+                            <td>
+                                <% if (typeof row[column] === 'boolean') { %>
+                                    <%= row[column] ? 'Yes' : 'No' %>
+                                <% } else if (row[column] === null) { %>
+                                    <em>null</em>
+                                <% } else { %>
+                                    <%= row[column] %>
+                                <% } %>
+                            </td>
+                        <% }); %>
+                        <td>
+                            <a href="/admin/<%= tableName %>/edit/<%= row.id %>" class="btn btn-warning btn-sm">Edit</a>
+                            <form method="POST" action="/admin/<%= tableName %>/delete/<%= row.id %>" style="display: inline;" onsubmit="return confirm('Are you sure you want to delete this record?')">
+                                <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+                            </form>
+                        </td>
+                    </tr>
+                <% }); %>
+            </tbody>
+        </table>
+    </div>
+<% } %>
+
+<style>
+    .btn-sm {
+        padding: 0.25rem 0.5rem;
+        font-size: 0.8rem;
+    }
+    
+    .table td {
+        max-width: 200px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+</style>

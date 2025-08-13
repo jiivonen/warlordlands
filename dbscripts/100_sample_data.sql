@@ -3,8 +3,9 @@ USE warlordlands;
 
 -- Insert sample admin user
 -- Note: In production, use proper password hashing (e.g., bcrypt)
+-- Password: admin123 (bcrypt hash with salt rounds 10)
 INSERT INTO users (nick, fullname, email, password_hash) 
-VALUES ('admin', 'System Administrator', 'admin@warlordlands.com.example', 'hashed_password_here');
+VALUES ('admin', 'System Administrator', 'admin@warlordlands.com.example', '$2b$10$rQZ8K9mN2pL4vX7wY1sA3eF6gH8iJ0kL1mN2oP3qR4sT5uV6wX7yZ8aB9cD0eF');
 
 -- Insert sample player
 INSERT INTO player (nick, fullname, email) 

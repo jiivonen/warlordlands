@@ -1,0 +1,32 @@
+<%
+    title = 'Add ' + displayName;
+%>
+
+<h2>Add New <%= displayName %></h2>
+
+<form method="POST" action="/admin/<%= tableName %>/add">
+    <% columns.forEach(function(column) { %>
+        <% if (column !== 'id' && !column.includes('created_at') && !column.includes('updated_at')) { %>
+            <div class="form-group">
+                <label for="<%= column %>"><%= column %>:</label>
+                <input type="text" id="<%= column %>" name="<%= column %>" class="form-control" required>
+            </div>
+        <% } %>
+    <% }); %>
+    
+    <div style="margin-top: 2rem;">
+        <button type="submit" class="btn btn-success">Add Record</button>
+        <a href="/admin/<%= tableName %>" class="btn btn-primary">Cancel</a>
+    </div>
+</form>
+
+<style>
+    h2 {
+        margin-bottom: 1.5rem;
+        color: #2c3e50;
+    }
+    
+    form {
+        max-width: 600px;
+    }
+</style>
