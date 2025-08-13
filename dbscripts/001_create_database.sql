@@ -83,6 +83,43 @@ CREATE TABLE keywords (
     description TEXT NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
 
+-- Create terrain_types table
+CREATE TABLE terrain_types (
+    type VARCHAR(50) PRIMARY KEY,
+    description TEXT NOT NULL,
+    movement_cost INT NOT NULL DEFAULT 1,
+    defence_bonus INT NOT NULL DEFAULT 0
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
+
+-- Create map table
+CREATE TABLE map (
+    id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    x_coord INT NOT NULL,
+    y_coord INT NOT NULL,
+    terrain_type VARCHAR(50) NOT NULL,
+    realm_id BIGINT UNSIGNED,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    
+    -- Foreign key to terrain_types table
+    CONSTRAINT fk_map_terrain FOREIGN KEY (terrain_type) 
+        REFERENCES terrain_types(type)
+        ON DELETE RESTRICT
+        ON UPDATE CASCADE,
+        
+    -- Foreign key to realm table (optional - for realm boundaries)
+    CONSTRAINT fk_map_realm FOREIGN KEY (realm_id) 
+        REFERENCES realm(id)
+        ON DELETE SET NULL
+        ON UPDATE CASCADE,
+        
+    -- Ensure unique coordinates
+    UNIQUE INDEX idx_coordinates (x_coord, y_coord),
+    -- Indexes for better query performance
+    INDEX idx_terrain_type (terrain_type),
+    INDEX idx_realm_id (realm_id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
+
 -- Create unit_classes table
 CREATE TABLE unit_classes (
     id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
