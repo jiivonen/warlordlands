@@ -66,4 +66,48 @@ CREATE TABLE unit_type (
 CREATE TABLE keywords (
     keyword VARCHAR(50) PRIMARY KEY,
     description TEXT NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
+
+-- Create unit_classes table
+CREATE TABLE unit_classes (
+    id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(100) NOT NULL UNIQUE,
+    description TEXT NOT NULL,
+    unit_type VARCHAR(50) NOT NULL,
+    melee_combat INT NOT NULL DEFAULT 0,
+    ranged_combat INT NOT NULL DEFAULT 0,
+    defence INT NOT NULL DEFAULT 0,
+    range INT NOT NULL DEFAULT 0,
+    hitpoints INT NOT NULL DEFAULT 1,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    
+    -- Foreign key to unit_type table
+    CONSTRAINT fk_unit_classes_type FOREIGN KEY (unit_type) 
+        REFERENCES unit_type(type)
+        ON DELETE RESTRICT
+        ON UPDATE CASCADE,
+        
+    -- Indexes for better query performance
+    INDEX idx_unit_type (unit_type),
+    INDEX idx_name (name)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
+
+-- Create unit_classes_keywords junction table for many-to-many relationship
+CREATE TABLE unit_classes_keywords (
+    unit_class_id BIGINT UNSIGNED NOT NULL,
+    keyword VARCHAR(50) NOT NULL,
+    
+    -- Composite primary key
+    PRIMARY KEY (unit_class_id, keyword),
+    
+    -- Foreign keys
+    CONSTRAINT fk_uck_unit_class FOREIGN KEY (unit_class_id) 
+        REFERENCES unit_classes(id)
+        ON DELETE CASCADE
+        ON UPDATE CASCADE,
+    CONSTRAINT fk_uck_keyword FOREIGN KEY (keyword) 
+        REFERENCES keywords(keyword)
+        ON DELETE CASCADE
+        ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci; 
