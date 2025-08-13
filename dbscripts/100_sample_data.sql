@@ -1,6 +1,11 @@
 -- Sample data for testing
 USE warlordlands;
 
+-- Insert sample admin user
+-- Note: In production, use proper password hashing (e.g., bcrypt)
+INSERT INTO users (nick, fullname, email, password_hash) 
+VALUES ('admin', 'System Administrator', 'admin@warlordlands.com.example', 'hashed_password_here');
+
 -- Insert sample player
 INSERT INTO player (nick, fullname, email) 
 VALUES ('player 1', 'Player One', 'player@example.com.invalid');
