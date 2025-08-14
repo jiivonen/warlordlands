@@ -5,7 +5,7 @@ USE warlordlands;
 -- Note: In production, use proper password hashing (e.g., bcrypt)
 -- Password: admin123 (bcrypt hash with salt rounds 10)
 INSERT INTO users (nick, fullname, email, password_hash) 
-VALUES ('admin', 'System Administrator', 'admin@warlordlands.com.example', '$2b$10$rQZ8K9mN2pL4vX7wY1sA3eF6gH8iJ0kL1mN2oP3qR4sT5uV6wX7yZ8aB9cD0eF');
+VALUES ('admin', 'System Administrator', 'admin@warlordlands.com.example', '$2b$10$2CshI/rXAmnNAjIs/PoRGuQG6TNiogqP5Lin4wTioI4IXt5eCqpaS');
 
 -- Insert sample player
 INSERT INTO player (nick, fullname, email) 
@@ -83,7 +83,7 @@ INSERT INTO map (x_coord, y_coord, terrain_type, realm_id) VALUES
 (2, 2, 'mountains', @sample_realm_id);
 
 -- Insert sample unit classes
-INSERT INTO unit_classes (name, description, unit_type, melee_combat, ranged_combat, defence, range, hitpoints) VALUES
+INSERT INTO unit_classes (name, description, unit_type, melee_combat, ranged_combat, defence, attack_range, hitpoints) VALUES
 ('Swordsman', 'Basic infantry unit with sword and shield', 'infantry', 3, 0, 2, 1, 10),
 ('Archer', 'Ranged infantry unit with bow', 'infantry', 1, 4, 1, 6, 8),
 ('Knight', 'Heavy cavalry with lance and armor', 'cavalry', 5, 0, 4, 1, 15),
