@@ -162,4 +162,64 @@ CREATE TABLE unit_classes_keywords (
         REFERENCES keywords(keyword)
         ON DELETE CASCADE
         ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
+
+-- Create army table
+CREATE TABLE army (
+    id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    realm_id BIGINT UNSIGNED NOT NULL,
+    x_coord INT NOT NULL,
+    y_coord INT NOT NULL,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    
+    -- Foreign key to realm table
+    CONSTRAINT fk_army_realm FOREIGN KEY (realm_id) 
+        REFERENCES realm(id)
+        ON DELETE CASCADE
+        ON UPDATE CASCADE,
+        
+    -- Ensure army names are unique within a realm
+    UNIQUE INDEX idx_army_name_realm (name, realm_id),
+    -- Indexes for better query performance
+    INDEX idx_realm_id (realm_id),
+    INDEX idx_coordinates (x_coord, y_coord)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
+
+-- Create unit table
+CREATE TABLE unit (
+    id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    realm_id BIGINT UNSIGNED NOT NULL,
+    unit_class_id BIGINT UNSIGNED NOT NULL,
+    army_id BIGINT UNSIGNED NOT NULL,
+    current_hitpoints INT NOT NULL,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    
+    -- Foreign key to realm table
+    CONSTRAINT fk_unit_realm FOREIGN KEY (realm_id) 
+        REFERENCES realm(id)
+        ON DELETE CASCADE
+        ON UPDATE CASCADE,
+        
+    -- Foreign key to unit_classes table
+    CONSTRAINT fk_unit_class FOREIGN KEY (unit_class_id) 
+        REFERENCES unit_classes(id)
+        ON DELETE RESTRICT
+        ON UPDATE CASCADE,
+        
+    -- Foreign key to army table
+    CONSTRAINT fk_unit_army FOREIGN KEY (army_id) 
+        REFERENCES army(id)
+        ON DELETE CASCADE
+        ON UPDATE CASCADE,
+        
+    -- Ensure unit names are unique within a realm
+    UNIQUE INDEX idx_unit_name_realm (name, realm_id),
+    -- Indexes for better query performance
+    INDEX idx_realm_id (realm_id),
+    INDEX idx_unit_class_id (unit_class_id),
+    INDEX idx_army_id (army_id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci; 
