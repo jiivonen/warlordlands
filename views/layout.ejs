@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><%= title %> - Warlordlands Admin</title>
+    <title>Warlordlands Admin</title>
     <style>
         * {
             margin: 0;
@@ -207,6 +207,49 @@
             color: #7f8c8d;
             margin-bottom: 1rem;
         }
+        
+        /* Additional styles for specific components */
+        .btn-sm {
+            padding: 0.25rem 0.5rem;
+            font-size: 0.8rem;
+        }
+        
+        .table td {
+            max-width: 200px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        
+        .form-control[readonly] {
+            background-color: #f8f9fa;
+            cursor: not-allowed;
+        }
+        
+        /* Login page specific styles */
+        .login-container {
+            max-width: 400px;
+            margin: 0 auto;
+        }
+        
+        .login-container h2 {
+            margin-bottom: 1.5rem;
+            color: #2c3e50;
+        }
+        
+        .login-container form {
+            margin-top: 2rem;
+        }
+        
+        /* Form specific styles */
+        .form-container {
+            max-width: 600px;
+        }
+        
+        .form-container h2 {
+            margin-bottom: 1.5rem;
+            color: #2c3e50;
+        }
     </style>
 </head>
 <body>
@@ -214,7 +257,7 @@
         <h1>Warlordlands Admin Panel</h1>
     </div>
     
-    <% if (typeof userNick !== 'undefined') { %>
+    <% if (typeof userNick !== 'undefined' && typeof hideNav === 'undefined') { %>
     <div class="nav">
         <a href="/admin">Dashboard</a>
         <a href="/admin/users">Admin Users</a>

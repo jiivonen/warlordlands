@@ -4,6 +4,7 @@ const session = require('express-session');
 const bcrypt = require('bcrypt');
 const bodyParser = require('body-parser');
 const path = require('path');
+const expressLayouts = require('express-ejs-layouts');
 require('dotenv').config();
 
 const app = express();
@@ -24,6 +25,12 @@ app.use(bodyParser.json());
 app.use(express.static('public'));
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
+
+// Layout configuration
+app.use(expressLayouts);
+app.set('layout', 'layout');
+app.set('layout extractScripts', true);
+app.set('layout extractStyles', true);
 
 // Session configuration
 app.use(session({
@@ -62,7 +69,11 @@ app.get('/', (req, res) => {
 
 // Login routes
 app.get('/login', (req, res) => {
-    res.render('login', { error: null });
+    res.render('login', { 
+        error: null, 
+        hideNav: true,
+        userNick: req.session.userNick 
+    });
 });
 
 app.post('/login', async (req, res) => {
@@ -75,14 +86,22 @@ app.post('/login', async (req, res) => {
         );
         
         if (rows.length === 0) {
-            return res.render('login', { error: 'Invalid credentials' });
+            return res.render('login', { 
+                error: 'Invalid credentials',
+                hideNav: true,
+                userNick: req.session.userNick
+            });
         }
         
         const user = rows[0];
         const isValidPassword = await bcrypt.compare(password, user.password_hash);
         
         if (!isValidPassword) {
-            return res.render('login', { error: 'Invalid credentials' });
+            return res.render('login', { 
+                error: 'Invalid credentials',
+                hideNav: true,
+                userNick: req.session.userNick
+            });
         }
         
         req.session.userId = user.id;
@@ -91,7 +110,11 @@ app.post('/login', async (req, res) => {
         
     } catch (error) {
         console.error('Login error:', error);
-        res.render('login', { error: 'Login failed' });
+        res.render('login', { 
+            error: 'Login failed',
+            hideNav: true,
+            userNick: req.session.userNick
+        });
     }
 });
 

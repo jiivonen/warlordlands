@@ -1,36 +1,23 @@
-<%
-    title = 'Login';
-%>
+<div class="login-container">
+    <h2>Admin Login</h2>
 
-<h2>Admin Login</h2>
+    <% if (error) { %>
+        <div class="alert alert-danger">
+            <%= error %>
+        </div>
+    <% } %>
 
-<% if (error) { %>
-    <div class="alert alert-danger">
-        <%= error %>
-    </div>
-<% } %>
-
-<form method="POST" action="/login" style="max-width: 400px;">
-    <div class="form-group">
-        <label for="nick">Username:</label>
-        <input type="text" id="nick" name="nick" class="form-control" required>
-    </div>
-    
-    <div class="form-group">
-        <label for="password">Password:</label>
-        <input type="password" id="password" name="password" class="form-control" required>
-    </div>
-    
-    <button type="submit" class="btn btn-primary">Login</button>
-</form>
-
-<style>
-    h2 {
-        margin-bottom: 1.5rem;
-        color: #2c3e50;
-    }
-    
-    form {
-        margin-top: 2rem;
-    }
-</style>
+    <form method="POST" action="/login">
+        <div class="form-group">
+            <label for="nick">Username:</label>
+            <input type="text" id="nick" name="nick" class="form-control" required>
+        </div>
+        
+        <div class="form-group">
+            <label for="password">Password:</label>
+            <input type="password" id="password" name="password" class="form-control" required>
+        </div>
+        
+        <button type="submit" class="btn btn-primary">Login</button>
+    </form>
+</div>
