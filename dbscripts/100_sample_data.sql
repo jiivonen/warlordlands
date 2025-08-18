@@ -7,19 +7,27 @@ USE warlordlands;
 INSERT INTO users (nick, fullname, email, password_hash) 
 VALUES ('admin', 'System Administrator', 'admin@warlordlands.com.example', '$2b$10$2CshI/rXAmnNAjIs/PoRGuQG6TNiogqP5Lin4wTioI4IXt5eCqpaS');
 
--- Insert sample player
+-- Insert sample players
 -- Note: In production, use proper password hashing (e.g., bcrypt)
 -- Password: player123 (bcrypt hash with salt rounds 10)
-INSERT INTO player (nick, fullname, email, password_hash) 
-VALUES ('player1', 'Player One', 'player@example.com.invalid', '$2b$10$IhxK9b.1XbtI0ABFlTMOAOpFR/e2U.LlfmwicJBYHK.8tnbaVUqh2');
+INSERT INTO player (nick, fullname, email, password_hash) VALUES 
+('player1', 'Player One', 'player1@example.com.invalid', '$2b$10$IhxK9b.1XbtI0ABFlTMOAOpFR/e2U.LlfmwicJBYHK.8tnbaVUqh2');
 
--- Store the player's ID for multiple realm insertions
-SET @player_id = LAST_INSERT_ID();
+-- Store the first player's ID
+SET @player1_id = LAST_INSERT_ID();
 
--- Insert sample realms for the player
+-- Insert second player
+-- Password: player456 (bcrypt hash with salt rounds 10)
+INSERT INTO player (nick, fullname, email, password_hash) VALUES 
+('player2', 'Player Two', 'player2@example.com.invalid', '$2b$10$IhxK9b.1XbtI0ABFlTMOAOpFR/e2U.LlfmwicJBYHK.8tnbaVUqh2');
+
+-- Store the second player's ID
+SET @player2_id = LAST_INSERT_ID();
+
+-- Insert sample realms - one per player
 INSERT INTO realm (name, player_id) VALUES 
-('First Realm', @player_id),
-('Sample Realm', @player_id);
+('First Realm', @player1_id),
+('Second Realm', @player2_id);
 
 -- Insert sample unit types
 INSERT INTO unit_type (type, description) VALUES
@@ -45,7 +53,7 @@ INSERT INTO terrain_types (type, description, movement_cost, defence_bonus) VALU
 -- Create a small 5x5 sample map
 -- Store realm IDs for map assignment
 SET @first_realm_id = (SELECT id FROM realm WHERE name = 'First Realm' LIMIT 1);
-SET @sample_realm_id = (SELECT id FROM realm WHERE name = 'Sample Realm' LIMIT 1);
+SET @second_realm_id = (SELECT id FROM realm WHERE name = 'Second Realm' LIMIT 1);
 
 -- Insert map tiles (5x5 grid from -2 to 2)
 INSERT INTO map (x_coord, y_coord, terrain_type, realm_id) VALUES
@@ -67,22 +75,22 @@ INSERT INTO map (x_coord, y_coord, terrain_type, realm_id) VALUES
 (-2, 0, 'open', @first_realm_id),
 (-1, 0, 'open', @first_realm_id),
 (0, 0, 'water', NULL),  -- Neutral territory
-(1, 0, 'open', @sample_realm_id),
-(2, 0, 'open', @sample_realm_id),
+(1, 0, 'open', @second_realm_id),
+(2, 0, 'open', @second_realm_id),
 
 -- Row 1 (y = 1)
-(-2, 1, 'forest', @sample_realm_id),
-(-1, 1, 'open', @sample_realm_id),
-(0, 1, 'open', @sample_realm_id),
-(1, 1, 'open', @sample_realm_id),
-(2, 1, 'forest', @sample_realm_id),
+(-2, 1, 'forest', @second_realm_id),
+(-1, 1, 'open', @second_realm_id),
+(0, 1, 'open', @second_realm_id),
+(1, 1, 'open', @second_realm_id),
+(2, 1, 'forest', @second_realm_id),
 
 -- Row 2 (y = 2)
-(-2, 2, 'mountains', @sample_realm_id),
-(-1, 2, 'forest', @sample_realm_id),
-(0, 2, 'forest', @sample_realm_id),
-(1, 2, 'open', @sample_realm_id),
-(2, 2, 'mountains', @sample_realm_id);
+(-2, 2, 'mountains', @second_realm_id),
+(-1, 2, 'forest', @second_realm_id),
+(0, 2, 'forest', @second_realm_id),
+(1, 2, 'open', @second_realm_id),
+(2, 2, 'mountains', @second_realm_id);
 
 -- Insert sample unit classes
 INSERT INTO unit_classes (name, description, unit_type, melee_combat, ranged_combat, defence, attack_range, hitpoints) VALUES
@@ -103,8 +111,8 @@ INSERT INTO unit_classes_keywords (unit_class_id, keyword) VALUES
 INSERT INTO army (name, realm_id, x_coord, y_coord) VALUES
 ('First Army', @first_realm_id, -1, -1),
 ('Defense Force', @first_realm_id, 0, -2),
-('Invasion Force', @sample_realm_id, 1, 1),
-('Border Patrol', @sample_realm_id, 2, 0);
+('Invasion Force', @second_realm_id, 1, 1),
+('Border Patrol', @second_realm_id, 2, 0);
 
 -- Insert sample units
 -- Get unit class IDs for reference
@@ -136,13 +144,13 @@ INSERT INTO unit (name, realm_id, unit_class_id, army_id, current_hitpoints) VAL
 
 -- Insert units for Invasion Force
 INSERT INTO unit (name, realm_id, unit_class_id, army_id, current_hitpoints) VALUES
-('Dragon Omega', @sample_realm_id, @dragon_id, @invasion_force_id, 22),
-('Knight Zeta', @sample_realm_id, @knight_id, @invasion_force_id, 14),
-('Swordsman Eta', @sample_realm_id, @swordsman_id, @invasion_force_id, 9);
+('Dragon Omega', @second_realm_id, @dragon_id, @invasion_force_id, 22),
+('Knight Zeta', @second_realm_id, @knight_id, @invasion_force_id, 14),
+('Swordsman Eta', @second_realm_id, @swordsman_id, @invasion_force_id, 9);
 
 -- Insert units for Border Patrol
 INSERT INTO unit (name, realm_id, unit_class_id, army_id, current_hitpoints) VALUES
-('Archer Theta', @sample_realm_id, @archer_id, @border_patrol_id, 7),
-('Knight Iota', @sample_realm_id, @knight_id, @border_patrol_id, 13);
+('Archer Theta', @second_realm_id, @archer_id, @border_patrol_id, 7),
+('Knight Iota', @second_realm_id, @knight_id, @border_patrol_id, 13);
 
 -- You can add more sample data here as needed 
