@@ -1,0 +1,31 @@
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+    <h2>🏰 Your Realms</h2>
+    <a href="/realms/new" class="btn btn-success">🏰 Create New Realm</a>
+</div>
+
+<% if (realms.length === 0) { %>
+    <div class="card" style="text-align: center; padding: 3rem;">
+        <h3>No Realms Yet</h3>
+        <p style="margin-bottom: 2rem;">You haven't created any realms yet. Start your conquest by creating your first realm!</p>
+        <a href="/realms/new" class="btn btn-primary">Create First Realm</a>
+    </div>
+<% } else { %>
+    <div class="grid">
+        <% realms.forEach(function(realm) { %>
+            <div class="card">
+                <h3><%= realm.name %></h3>
+                <p><strong>Created:</strong> <%= new Date(realm.created_at).toLocaleDateString() %></p>
+                <p><strong>Realm ID:</strong> #<%= realm.id %></p>
+                
+                <div style="margin-top: 1rem;">
+                    <a href="/realms/<%= realm.id %>" class="btn btn-primary">View Details</a>
+                    <a href="/realms/<%= realm.id %>/edit" class="btn btn-warning">Edit Realm</a>
+                </div>
+            </div>
+        <% }); %>
+    </div>
+<% } %>
+
+<div style="margin-top: 2rem;">
+    <a href="/home" class="btn btn-primary">← Back to Home</a>
+</div>

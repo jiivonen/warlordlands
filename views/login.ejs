@@ -1,0 +1,32 @@
+<div class="auth-container">
+    <h2>⚔️ Welcome to Warlordlands</h2>
+    <p style="text-align: center; color: #7f8c8d; margin-bottom: 2rem;">
+        Enter your credentials to command your armies!
+    </p>
+    
+    <% if (error) { %>
+        <div class="alert alert-danger">
+            ⚠️ <%= error %>
+        </div>
+    <% } %>
+    
+    <form method="POST" action="/login">
+        <div class="form-group">
+            <label for="email">📧 Email Address:</label>
+            <input type="email" id="email" name="email" class="form-control" required>
+        </div>
+        
+        <div class="form-group">
+            <label for="password">🔒 Password:</label>
+            <input type="password" id="password" name="password" class="form-control" required>
+        </div>
+        
+        <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 1rem;">
+            ⚔️ Enter Battlefield
+        </button>
+    </form>
+    
+    <div class="auth-links">
+        <p>New to Warlordlands? <a href="/register">🏰 Create Kingdom</a></p>
+    </div>
+</div>

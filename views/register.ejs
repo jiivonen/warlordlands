@@ -1,0 +1,47 @@
+<div class="auth-container">
+    <h2>🎯 Join Warlordlands</h2>
+    <p style="text-align: center; color: #7f8c8d; margin-bottom: 2rem;">
+        Create your account and begin your conquest!
+    </p>
+
+    <% if (error) { %>
+        <div class="alert alert-danger">
+            ⚠️ <%= error %>
+        </div>
+    <% } %>
+
+    <form method="POST" action="/register">
+        <div class="form-group">
+            <label for="nick">👤 Username:</label>
+            <input type="text" id="nick" name="nick" class="form-control" required>
+        </div>
+        
+        <div class="form-group">
+            <label for="fullname">📝 Full Name:</label>
+            <input type="text" id="fullname" name="fullname" class="form-control" required>
+        </div>
+        
+        <div class="form-group">
+            <label for="email">📧 Email Address:</label>
+            <input type="email" id="email" name="email" class="form-control" required>
+        </div>
+        
+        <div class="form-group">
+            <label for="password">🔒 Password:</label>
+            <input type="password" id="password" name="password" class="form-control" required>
+        </div>
+        
+        <div class="form-group">
+            <label for="confirmPassword">🔐 Confirm Password:</label>
+            <input type="password" id="confirmPassword" name="confirmPassword" class="form-control" required>
+        </div>
+        
+        <button type="submit" class="btn btn-success" style="width: 100%; margin-top: 1rem;">
+            🏰 Create Kingdom
+        </button>
+    </form>
+
+    <div class="auth-links">
+        <p>Already have an account? <a href="/login">⚔️ Login</a></p>
+    </div>
+</div>

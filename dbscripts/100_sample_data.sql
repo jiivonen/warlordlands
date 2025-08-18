@@ -8,8 +8,10 @@ INSERT INTO users (nick, fullname, email, password_hash)
 VALUES ('admin', 'System Administrator', 'admin@warlordlands.com.example', '$2b$10$2CshI/rXAmnNAjIs/PoRGuQG6TNiogqP5Lin4wTioI4IXt5eCqpaS');
 
 -- Insert sample player
-INSERT INTO player (nick, fullname, email) 
-VALUES ('player 1', 'Player One', 'player@example.com.invalid');
+-- Note: In production, use proper password hashing (e.g., bcrypt)
+-- Password: player123 (bcrypt hash with salt rounds 10)
+INSERT INTO player (nick, fullname, email, password_hash) 
+VALUES ('player1', 'Player One', 'player@example.com.invalid', '$2b$10$IhxK9b.1XbtI0ABFlTMOAOpFR/e2U.LlfmwicJBYHK.8tnbaVUqh2');
 
 -- Store the player's ID for multiple realm insertions
 SET @player_id = LAST_INSERT_ID();

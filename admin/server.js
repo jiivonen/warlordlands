@@ -8,7 +8,7 @@ const expressLayouts = require('express-ejs-layouts');
 require('dotenv').config();
 
 const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.ADMIN_PORT || 3030;
 
 // Database configuration
 const dbConfig = {
@@ -34,10 +34,14 @@ app.set('layout extractStyles', true);
 
 // Session configuration
 app.use(session({
-    secret: process.env.SESSION_SECRET || 'your-secret-key',
+    name: 'admin.sid',
+    secret: process.env.ADMIN_SESSION_SECRET || 'admin-secret-key-different-from-game',
     resave: false,
     saveUninitialized: false,
-    cookie: { secure: false } // Set to true in production with HTTPS
+    cookie: {
+        secure: false,
+        sameSite: 'lax'
+    }
 }));
 
 // Database connection pool
