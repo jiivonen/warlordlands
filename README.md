@@ -1,14 +1,6 @@
-# Warlordlands Admin Web Service
+# Warlordlands Game Service
 
 A Node.js/Express web service for managing the Warlordlands game database.
-
-## Features
-
-- **Admin Authentication**: Secure login system for admin users
-- **Database Management**: Full CRUD operations for all database tables
-- **User-Friendly Interface**: Clean, responsive web interface
-- **Session Management**: Secure session handling
-- **Real-time Updates**: Immediate database changes
 
 ## Prerequisites
 
@@ -65,10 +57,10 @@ A Node.js/Express web service for managing the Warlordlands game database.
 1. **Start the server**:
    ```bash
    # Development mode with auto-restart
-   npm run dev
+   npm run dev_admin
    
    # Production mode
-   npm start
+   npm start_admin
    ```
 
 2. **Access the admin panel**:
@@ -77,19 +69,6 @@ A Node.js/Express web service for managing the Warlordlands game database.
 3. **Login**:
    - Username: `admin`
    - Password: `your_password` (or whatever you set)
-
-## Available Tables
-
-The admin panel provides management for:
-
-- **Admin Users**: System administrators
-- **Players**: Game participants
-- **Realms**: Player-owned territories
-- **Unit Types**: Categories of units (infantry, cavalry, etc.)
-- **Keywords**: Unit abilities and traits
-- **Unit Classes**: Specific unit types with stats
-- **Terrain Types**: Map terrain categories
-- **Map Tiles**: Individual map positions
 
 ## Security Notes
 
@@ -104,21 +83,6 @@ The admin panel provides management for:
 - **Auto-restart**: Use `npm run dev` for development
 - **Logs**: Check console output for errors
 - **Database**: Ensure MariaDB is running and accessible
-
-## Troubleshooting
-
-1. **Database connection failed**:
-   - Check database credentials in `.env`
-   - Ensure MariaDB is running
-   - Verify database exists
-
-2. **Login issues**:
-   - Check password hash in database
-   - Verify admin user exists
-
-3. **Port already in use**:
-   - Change PORT in `.env` file
-   - Kill existing process on port 3000
 
 ## File Structure
 
