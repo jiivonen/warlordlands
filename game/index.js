@@ -4,6 +4,7 @@ const Realm = require('./entities/Realm');
 const Army = require('./entities/Army');
 const Unit = require('./entities/Unit');
 const GameTurn = require('./entities/GameTurn');
+const Command = require('./entities/Command');
 
 // System classes
 const TurnManager = require('./systems/TurnManager');
@@ -19,6 +20,7 @@ module.exports = {
     Army,
     Unit,
     GameTurn,
+    Command,
     
     // Systems
     TurnManager,
