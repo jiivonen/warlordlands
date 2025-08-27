@@ -3,78 +3,13 @@
     Your kingdom awaits your command, commander!
 </p>
 
-<div class="stats-grid">
-    <div class="stat-card">
-        <h4><%= realms.length %></h4>
-        <p>🏰 Realms</p>
-    </div>
-    <div class="stat-card">
-        <h4><%= armies.length %></h4>
-        <p>⚔️ Armies</p>
-    </div>
-    <div class="stat-card">
-        <h4><%= units.length %></h4>
-        <p>👥 Units</p>
-    </div>
-    <div class="stat-card">
-        <h4><%= units.reduce((total, unit) => total + unit.current_hitpoints, 0) %></h4>
-        <p>❤️ Total HP</p>
-    </div>
-</div>
-
 <div class="grid">
-    <div class="card">
-        <h3>🏰 Your Realms</h3>
-        <% if (realms.length === 0) { %>
-            <p>You haven't created any realms yet.</p>
-            <a href="/realms/new" class="btn btn-primary">Create First Realm</a>
-        <% } else { %>
-            <p>You control <%= realms.length %> realm<%= realms.length !== 1 ? 's' : '' %>.</p>
-            <a href="/realms" class="btn btn-primary">Manage Realms</a>
-        <% } %>
-    </div>
-
-    <div class="card">
-        <h3>⚔️ Your Armies</h3>
-        <% if (armies.length === 0) { %>
-            <p>No armies have been raised yet.</p>
-            <a href="/armies" class="btn btn-primary">Raise Army</a>
-        <% } else { %>
-            <p>You command <%= armies.length %> arm<%= armies.length !== 1 ? 'ies' : 'y' %>.</p>
-            <a href="/armies" class="btn btn-primary">Command Armies</a>
-        <% } %>
-    </div>
-
-    <div class="card">
-        <h3>👥 Your Units</h3>
-        <% if (units.length === 0) { %>
-            <p>No units have been recruited yet.</p>
-            <a href="/units" class="btn btn-primary">Recruit Units</a>
-        <% } else { %>
-            <p>You have <%= units.length %> unit<%= units.length !== 1 ? 's' : '' %> under your command.</p>
-            <a href="/units" class="btn btn-primary">Manage Units</a>
-        <% } %>
-    </div>
-
     <div class="card">
         <h3>🗺️ World Map</h3>
         <p>Explore the world and discover new territories.</p>
         <a href="/map" class="btn btn-primary">View Map</a>
     </div>
 </div>
-
-<% if (realms.length > 0) { %>
-<h3 style="margin-top: 2rem; color: #2c3e50;">🏰 Recent Realms</h3>
-<div class="grid" style="grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));">
-    <% realms.slice(0, 3).forEach(function(realm) { %>
-        <div class="card">
-            <h4><%= realm.name %></h4>
-            <p>Created: <%= new Date(realm.created_at).toLocaleDateString() %></p>
-            <a href="/realms/<%= realm.id %>" class="btn btn-warning">View Details</a>
-        </div>
-    <% }); %>
-</div>
-<% } %>
 
 <% if (armies.length > 0) { %>
 <h3 style="margin-top: 2rem; color: #2c3e50;">⚔️ Active Armies</h3>

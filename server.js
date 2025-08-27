@@ -217,12 +217,6 @@ app.get('/logout', (req, res) => {
 // Home screen
 app.get('/home', requireAuth, async (req, res) => {
     try {
-        // Get player's realms
-        const [realms] = await pool.execute(
-            'SELECT id, name, created_at FROM realm WHERE player_id = ? ORDER BY created_at DESC',
-            [req.session.playerId]
-        );
-        
         // Get player's armies
         const [armies] = await pool.execute(
             `SELECT a.id, a.name, a.x_coord, a.y_coord, r.name as realm_name 
@@ -249,7 +243,6 @@ app.get('/home', requireAuth, async (req, res) => {
         res.render('home', {
             playerName: req.session.playerName,
             playerNick: req.session.playerNick,
-            realms: realms,
             armies: armies,
             units: units
         });
@@ -259,66 +252,7 @@ app.get('/home', requireAuth, async (req, res) => {
     }
 });
 
-// Realm management
-app.get('/realms', requireAuth, async (req, res) => {
-    try {
-        const [realms] = await pool.execute(
-            'SELECT id, name, created_at FROM realm WHERE player_id = ? ORDER BY created_at DESC',
-            [req.session.playerId]
-        );
-        
-        res.render('realms', {
-            playerName: req.session.playerName,
-            playerNick: req.session.playerNick,
-            realms: realms
-        });
-    } catch (error) {
-        console.error('Realms error:', error);
-        res.status(500).send('Server error');
-    }
-});
 
-app.get('/realms/new', requireAuth, (req, res) => {
-    res.render('new-realm', {
-        playerName: req.session.playerName,
-        playerNick: req.session.playerNick
-    });
-});
-
-app.post('/realms/new', requireAuth, async (req, res) => {
-    const { name } = req.body;
-    
-    try {
-        // Check if realm name already exists
-        const [existing] = await pool.execute(
-            'SELECT id FROM realm WHERE name = ?',
-            [name]
-        );
-        
-        if (existing.length > 0) {
-            return res.render('new-realm', {
-                playerName: req.session.playerName,
-                playerNick: req.session.playerNick,
-                error: 'Realm name already exists'
-            });
-        }
-        
-        // Create new realm
-        await pool.execute(
-            'INSERT INTO realm (name, player_id) VALUES (?, ?)',
-            [name, req.session.playerId]
-        );
-        
-        res.redirect('/realms');
-    } catch (error) {
-        console.error('Create realm error:', error);
-        res.render('new-realm', {
-            playerName: req.session.playerName,
-            playerNick: req.session.playerNick,
-            error: 'Failed to create realm'
-        });
-    }
-});
 
 // Start server
 async function startServer() {
