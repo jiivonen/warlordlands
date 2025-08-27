@@ -1,0 +1,298 @@
+<h2>🗺️ World Map</h2>
+<p style="color: #7f8c8d; margin-bottom: 2rem;">
+    Explore the world and discover new territories. Click on tiles to see details.
+</p>
+
+<div class="map-container">
+    <div class="map-controls">
+        <button id="zoomIn" class="btn btn-primary">🔍+</button>
+        <button id="zoomOut" class="btn btn-primary">🔍-</button>
+        <button id="centerMap" class="btn btn-warning">🎯 Center</button>
+        <span id="coordinates" class="coordinates-display">Coordinates: (0, 0)</span>
+    </div>
+    
+    <div class="map-viewport">
+        <div id="mapGrid" class="map-grid"></div>
+    </div>
+    
+    <div class="map-legend">
+        <h4>🗺️ Terrain Legend</h4>
+        <div class="legend-item">
+            <div class="terrain-sample open"></div>
+            <span>Open</span>
+        </div>
+        <div class="legend-item">
+            <div class="terrain-sample forest">🌲</div>
+            <span>Forest</span>
+        </div>
+        <div class="legend-item">
+            <div class="terrain-sample mountains">⛰️</div>
+            <span>Mountains</span>
+        </div>
+        <div class="legend-item">
+            <div class="terrain-sample water"></div>
+            <span>Water</span>
+        </div>
+        <div class="legend-item">
+            <div class="terrain-sample desert">🏜️</div>
+            <span>Desert</span>
+        </div>
+        <div class="legend-item">
+            <div class="terrain-sample hills">🏔️</div>
+            <span>Hills</span>
+        </div>
+        <div class="legend-item">
+            <div class="terrain-sample unknown">❓</div>
+            <span>Unknown</span>
+        </div>
+    </div>
+</div>
+
+<div id="tileInfo" class="tile-info" style="display: none;">
+    <h4>📍 Tile Information</h4>
+    <div id="tileDetails"></div>
+</div>
+
+
+
+<script>
+let currentZoom = 1;
+let mapData = null;
+let selectedTile = null;
+
+// Initialize map
+document.addEventListener('DOMContentLoaded', function() {
+    loadMapData();
+    setupEventListeners();
+});
+
+function setupEventListeners() {
+    document.getElementById('zoomIn').addEventListener('click', () => {
+        currentZoom = Math.min(currentZoom * 1.2, 3);
+        updateMapDisplay();
+    });
+
+    document.getElementById('zoomOut').addEventListener('click', () => {
+        currentZoom = Math.max(currentZoom / 1.2, 0.5);
+        updateMapDisplay();
+    });
+
+    document.getElementById('centerMap').addEventListener('click', () => {
+        centerOnPlayerArmies();
+    });
+}
+
+async function loadMapData() {
+    try {
+        const response = await fetch('/api/map/data');
+        if (response.ok) {
+            mapData = await response.json();
+            renderMap();
+            centerOnPlayerArmies();
+        } else {
+            console.error('Failed to load map data');
+        }
+    } catch (error) {
+        console.error('Error loading map data:', error);
+    }
+}
+
+function renderMap() {
+    if (!mapData) return;
+
+    const mapGrid = document.getElementById('mapGrid');
+    const bounds = mapData.mapBounds;
+    
+    // Calculate grid dimensions
+    const width = bounds.max_x - bounds.min_x + 1;
+    const height = bounds.max_y - bounds.min_y + 1;
+    
+    mapGrid.innerHTML = '';
+
+    // Create table-based grid structure
+    let tileCount = 0;
+    for (let y = bounds.min_y; y <= bounds.max_y; y++) {
+        const row = document.createElement('div');
+        row.className = 'map-row';
+        
+        for (let x = bounds.min_x; x <= bounds.max_x; x++) {
+            const tile = createMapTile(x, y);
+            row.appendChild(tile);
+            tileCount++;
+        }
+        
+        mapGrid.appendChild(row);
+    }
+}
+
+function createMapTile(x, y) {
+    const tile = document.createElement('div');
+    tile.className = 'map-tile';
+    tile.dataset.x = x;
+    tile.dataset.y = y;
+    
+    // Find tile data
+    const tileData = mapData.visibleTiles.find(t => t.x_coord === x && t.y_coord === y);
+    
+    if (tileData) {
+        tile.classList.add(`terrain-${tileData.terrain_type}`);
+        tile.title = `${tileData.description} (${x}, ${y})`;
+        
+        // Add terrain icon
+        const terrainIcon = document.createElement('div');
+        terrainIcon.className = 'terrain-icon';
+        terrainIcon.textContent = getTerrainIcon(tileData.terrain_type);
+        tile.appendChild(terrainIcon);
+        
+        // Check for armies
+        const playerArmy = mapData.playerArmies.find(a => a.x_coord === x && a.y_coord === y);
+        const enemyArmy = mapData.enemyArmies.find(a => a.x_coord === x && a.y_coord === y);
+        
+        if (playerArmy) {
+            const armyIndicator = document.createElement('div');
+            armyIndicator.className = 'army-indicator player-army';
+            armyIndicator.textContent = '⚔️';
+            armyIndicator.title = `Your Army: ${playerArmy.name}`;
+            tile.appendChild(armyIndicator);
+        } else if (enemyArmy) {
+            const armyIndicator = document.createElement('div');
+            armyIndicator.className = 'army-indicator enemy-army';
+            armyIndicator.textContent = '⚔️';
+            armyIndicator.title = `Enemy Army: ${enemyArmy.name} (${enemyArmy.player_nick})`;
+            tile.appendChild(armyIndicator);
+        }
+    } else {
+        tile.classList.add('terrain-unknown');
+        tile.title = `Unknown Territory (${x}, ${y})`;
+        
+        // Add unknown terrain icon
+        const terrainIcon = document.createElement('div');
+        terrainIcon.className = 'terrain-icon';
+        terrainIcon.textContent = '❓';
+        terrainIcon.style.color = '#fff';
+        tile.appendChild(terrainIcon);
+    }
+    
+    tile.addEventListener('click', () => selectTile(x, y, tileData));
+    tile.addEventListener('mouseenter', () => updateCoordinates(x, y));
+    
+    return tile;
+}
+
+function getTerrainIcon(terrainType) {
+    const icons = {
+        'open': '',
+        'forest': '🌲',
+        'mountains': '⛰️',
+        'water': '',
+        'desert': '🏜️',
+        'hills': '🏔️'
+    };
+    return terrainType in icons ? icons[terrainType] : '❓';
+}
+
+function selectTile(x, y, tileData) {
+    // Remove previous selection
+    if (selectedTile) {
+        selectedTile.classList.remove('selected');
+    }
+    
+    // Select new tile
+    const tileElement = document.querySelector(`[data-x="${x}"][data-y="${y}"]`);
+    if (tileElement) {
+        tileElement.classList.add('selected');
+        selectedTile = tileElement;
+    }
+    
+    // Show tile info
+    showTileInfo(x, y, tileData);
+}
+
+function showTileInfo(x, y, tileData) {
+    const tileInfo = document.getElementById('tileInfo');
+    const tileDetails = document.getElementById('tileDetails');
+    
+    if (tileData) {
+        tileDetails.innerHTML = `
+            <div class="tile-detail">
+                <strong>Coordinates:</strong>
+                <span>(${x}, ${y})</span>
+            </div>
+            <div class="tile-detail">
+                <strong>Terrain:</strong>
+                <span>${tileData.description}</span>
+            </div>
+            <div class="tile-detail">
+                <strong>Movement Cost:</strong>
+                <span>${tileData.movement_cost}</span>
+            </div>
+            <div class="tile-detail">
+                <strong>Defence Bonus:</strong>
+                <span>${tileData.defence_bonus}</span>
+            </div>
+        `;
+        
+        // Check for armies
+        const playerArmy = mapData.playerArmies.find(a => a.x_coord === x && a.y_coord === y);
+        const enemyArmy = mapData.enemyArmies.find(a => a.x_coord === x && a.y_coord === y);
+        
+        if (playerArmy) {
+            tileDetails.innerHTML += `
+                <div class="tile-detail">
+                    <strong>Your Army:</strong>
+                    <span>${playerArmy.name}</span>
+                </div>
+            `;
+        } else if (enemyArmy) {
+            tileDetails.innerHTML += `
+                <div class="tile-detail">
+                    <strong>Enemy Army:</strong>
+                    <span>${enemyArmy.name} (${enemyArmy.player_nick})</span>
+                </div>
+            `;
+        }
+        
+        tileInfo.style.display = 'block';
+    } else {
+        tileDetails.innerHTML = `
+            <div class="tile-detail">
+                <strong>Coordinates:</strong>
+                <span>(${x}, ${y})</span>
+            </div>
+            <div class="tile-detail">
+                <strong>Status:</strong>
+                <span>Unknown Territory</span>
+            </div>
+        `;
+        tileInfo.style.display = 'block';
+    }
+}
+
+function updateCoordinates(x, y) {
+    document.getElementById('coordinates').textContent = `Coordinates: (${x}, ${y})`;
+}
+
+function updateMapDisplay() {
+    const mapGrid = document.getElementById('mapGrid');
+    mapGrid.style.transform = `scale(${currentZoom})`;
+}
+
+function centerOnPlayerArmies() {
+    if (!mapData || mapData.playerArmies.length === 0) return;
+    
+    // Calculate center of player armies
+    const avgX = mapData.playerArmies.reduce((sum, army) => sum + army.x_coord, 0) / mapData.playerArmies.length;
+    const avgY = mapData.playerArmies.reduce((sum, army) => sum + army.y_coord, 0) / mapData.playerArmies.length;
+    
+    // Find the tile element at the center coordinates
+    const centerTile = document.querySelector(`[data-x="${Math.round(avgX)}"][data-y="${Math.round(avgY)}"]`);
+    if (centerTile) {
+        // Scroll the tile into view
+        centerTile.scrollIntoView({
+            behavior: 'smooth',
+            block: 'center',
+            inline: 'center'
+        });
+    }
+}
+</script>

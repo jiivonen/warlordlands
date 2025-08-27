@@ -276,6 +276,11 @@
             }
         }
     </style>
+    
+    <!-- Page-specific CSS -->
+    <% if (typeof pageCSS !== 'undefined') { %>
+        <link rel="stylesheet" href="<%= pageCSS %>">
+    <% } %>
 </head>
 <body>
     <% if (typeof hideNav === 'undefined' || !hideNav) { %>

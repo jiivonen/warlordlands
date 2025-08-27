@@ -1,0 +1,248 @@
+.map-container {
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 15px;
+    padding: 2rem;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    backdrop-filter: blur(10px);
+}
+
+.map-controls {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1rem;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.coordinates-display {
+    background: rgba(52, 152, 219, 0.1);
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    font-family: monospace;
+    font-weight: 600;
+    color: #2c3e50;
+}
+
+.map-viewport {
+    border: 2px solid #3498db;
+    border-radius: 8px;
+    overflow: auto;
+    background: #f8f9fa;
+    position: relative;
+    min-height: 400px;
+    max-height: 600px;
+    padding: 1rem;
+}
+
+.map-grid {
+    display: table;
+    border-collapse: collapse;
+    background: #ddd;
+    transform-origin: center;
+    transition: transform 0.3s ease;
+    width: fit-content;
+    margin: 0 auto;
+}
+
+.map-row {
+    display: table-row;
+}
+
+/* Fallback for browsers that don't support grid well */
+.map-grid.fallback {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1px;
+    justify-content: center;
+}
+
+.map-tile {
+    width: 30px;
+    height: 30px;
+    border: 1px solid rgba(0, 0, 0, 0.2);
+    cursor: pointer;
+    position: relative;
+    transition: all 0.2s ease;
+    display: table-cell;
+    vertical-align: middle;
+    text-align: center;
+    font-size: 12px;
+    font-weight: bold;
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.1);
+}
+
+.map-tile:hover {
+    transform: scale(1.1);
+    z-index: 10;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.map-tile.selected {
+    border: 3px solid #e74c3c;
+    transform: scale(1.1);
+    z-index: 10;
+    box-shadow: 0 0 15px rgba(231, 76, 60, 0.5);
+}
+
+
+
+/* Terrain Types */
+.terrain-open { 
+    background: linear-gradient(135deg, #90EE90, #7CFC00);
+    position: relative;
+}
+
+.terrain-forest { 
+    background: linear-gradient(135deg, #228B22, #006400);
+    position: relative;
+}
+
+.terrain-mountains { 
+    background: linear-gradient(135deg, #8B4513, #654321);
+    position: relative;
+}
+
+.terrain-water { 
+    background: linear-gradient(135deg, #4169E1, #1E90FF);
+    position: relative;
+}
+
+.terrain-desert { 
+    background: linear-gradient(135deg, #F4A460, #DEB887);
+    position: relative;
+}
+
+.terrain-hills { 
+    background: linear-gradient(135deg, #A0522D, #8B4513);
+    position: relative;
+}
+
+.terrain-unknown { 
+    background: linear-gradient(135deg, #666, #444);
+    position: relative;
+}
+
+.terrain-icon {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 14px;
+    pointer-events: none;
+    z-index: 1;
+}
+
+/* Army indicators */
+.army-indicator {
+    position: absolute;
+    top: 2px;
+    right: 2px;
+    background: #e74c3c;
+    color: white;
+    border-radius: 50%;
+    width: 16px;
+    height: 16px;
+    font-size: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+}
+
+.player-army {
+    background: #27ae60 !important;
+}
+
+.enemy-army {
+    background: #e74c3c !important;
+}
+
+.map-legend {
+    margin-top: 2rem;
+    padding: 1rem;
+    background: rgba(52, 152, 219, 0.1);
+    border-radius: 8px;
+}
+
+.map-legend h4 {
+    margin-bottom: 1rem;
+    color: #2c3e50;
+}
+
+.legend-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.5rem;
+}
+
+.terrain-sample {
+    width: 24px;
+    height: 24px;
+    border: 1px solid rgba(0, 0, 0, 0.2);
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    position: relative;
+}
+
+.terrain-sample.open { 
+    background: linear-gradient(135deg, #90EE90, #7CFC00);
+}
+.terrain-sample.forest { 
+    background: linear-gradient(135deg, #228B22, #006400);
+}
+.terrain-sample.mountains { 
+    background: linear-gradient(135deg, #8B4513, #654321);
+}
+.terrain-sample.water { 
+    background: linear-gradient(135deg, #4169E1, #1E90FF);
+}
+.terrain-sample.desert { 
+    background: linear-gradient(135deg, #F4A460, #DEB887);
+}
+.terrain-sample.hills { 
+    background: linear-gradient(135deg, #A0522D, #8B4513);
+}
+.terrain-sample.unknown { 
+    background: linear-gradient(135deg, #666, #444);
+    color: #fff;
+}
+
+.tile-info {
+    margin-top: 2rem;
+    padding: 1rem;
+    background: rgba(255, 255, 255, 0.9);
+    border-radius: 8px;
+    border-left: 4px solid #3498db;
+}
+
+.tile-info h4 {
+    margin-bottom: 1rem;
+    color: #2c3e50;
+}
+
+.tile-detail {
+    margin-bottom: 0.5rem;
+    display: flex;
+    justify-content: space-between;
+}
+
+.tile-detail strong {
+    color: #2c3e50;
+}
+
+@media (max-width: 768px) {
+    .map-controls {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .map-tile {
+        width: 25px;
+        height: 25px;
+        font-size: 10px;
+    }
+}

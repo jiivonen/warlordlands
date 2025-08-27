@@ -252,6 +252,30 @@ app.get('/home', requireAuth, async (req, res) => {
     }
 });
 
+// Map page
+app.get('/map', requireAuth, (req, res) => {
+    res.render('map', {
+        playerName: req.session.playerName,
+        playerNick: req.session.playerNick,
+        pageCSS: '/css/map.css'
+    });
+});
+
+// Map API endpoint
+app.get('/api/map/data', requireAuth, async (req, res) => {
+    try {
+        const Map = require('./game/world/Map');
+        const mapInstance = new Map(pool);
+        
+        const strategicInfo = await mapInstance.getStrategicMapInfo(req.session.playerId);
+        
+        res.json(strategicInfo);
+    } catch (error) {
+        console.error('Map data error:', error);
+        res.status(500).json({ error: 'Failed to load map data' });
+    }
+});
+
 
 
 // Start server

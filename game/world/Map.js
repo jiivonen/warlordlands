@@ -194,7 +194,7 @@ class Map {
     async findStartingPositions(count = 1) {
         try {
             // Find positions that are:
-            // 1. On plains terrain
+            // 1. On open terrain
             // 2. Not occupied by armies
             // 3. Not within range of existing armies
             // 4. Well-spaced from each other
@@ -203,7 +203,7 @@ class Map {
                 `SELECT m.x_coord, m.y_coord, m.terrain_type
                  FROM map m 
                  LEFT JOIN army a ON m.x_coord = a.x_coord AND m.y_coord = a.y_coord
-                 WHERE m.terrain_type = 'plains' 
+                 WHERE m.terrain_type = 'open' 
                  AND a.id IS NULL
                  ORDER BY RAND()
                  LIMIT ?`,
