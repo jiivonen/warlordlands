@@ -223,4 +223,29 @@ CREATE TABLE unit (
     INDEX idx_realm_id (realm_id),
     INDEX idx_unit_class_id (unit_class_id),
     INDEX idx_army_id (army_id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
+
+-- Create game_turns table
+CREATE TABLE game_turns (
+    id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    turn_number INT NOT NULL UNIQUE,
+    start_time TIMESTAMP NOT NULL,
+    end_time TIMESTAMP NOT NULL,
+    command_deadline TIMESTAMP NOT NULL,
+    status ENUM('pending', 'active', 'completed') NOT NULL DEFAULT 'pending',
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    
+    -- Ensure turn numbers are sequential and positive
+    CHECK (turn_number > 0),
+    -- Ensure logical time progression
+    CHECK (start_time < end_time),
+    CHECK (command_deadline <= end_time),
+    
+    -- Indexes for better query performance
+    INDEX idx_turn_number (turn_number),
+    INDEX idx_status (status),
+    INDEX idx_start_time (start_time),
+    INDEX idx_end_time (end_time),
+    INDEX idx_command_deadline (command_deadline)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci; 

@@ -140,7 +140,8 @@ app.get('/admin', requireAuth, async (req, res) => {
             { name: 'terrain_types', displayName: 'Terrain Types' },
             { name: 'map', displayName: 'Map Tiles' },
             { name: 'army', displayName: 'Armies' },
-            { name: 'unit', displayName: 'Units' }
+            { name: 'unit', displayName: 'Units' },
+            { name: 'game_turns', displayName: 'Game Turns' }
         ];
         
         res.render('admin', { 
@@ -281,7 +282,8 @@ function getDisplayName(tableName) {
         'terrain_types': 'Terrain Types',
         'map': 'Map Tiles',
         'army': 'Armies',
-        'unit': 'Units'
+        'unit': 'Units',
+        'game_turns': 'Game Turns'
     };
     return displayNames[tableName] || tableName;
 }
