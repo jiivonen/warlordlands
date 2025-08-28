@@ -8,7 +8,9 @@
         <button id="zoomIn" class="btn btn-primary">🔍+</button>
         <button id="zoomOut" class="btn btn-primary">🔍-</button>
         <button id="centerMap" class="btn btn-warning">🎯 Center</button>
-        <span id="coordinates" class="coordinates-display">Coordinates: (0, 0)</span>
+        <div id="tileInfo" class="coordinates-display" style="display: none;">
+            <div id="tileDetails"></div>
+        </div>
     </div>
     
     <div class="map-viewport">
@@ -46,11 +48,6 @@
             <span>Unknown</span>
         </div>
     </div>
-</div>
-
-<div id="tileInfo" class="tile-info" style="display: none;">
-    <h4>📍 Tile Information</h4>
-    <div id="tileDetails"></div>
 </div>
 
 
@@ -158,7 +155,7 @@ function createMapTile(x, y) {
             const armyIndicator = document.createElement('div');
             armyIndicator.className = 'army-indicator enemy-army';
             armyIndicator.textContent = '⚔️';
-            armyIndicator.title = `Enemy Army: ${enemyArmy.name} (${enemyArmy.player_nick})`;
+            armyIndicator.title = `Enemy Army: ${enemyArmy.name} (${enemyArmy.realm_name})`;
             tile.appendChild(armyIndicator);
         }
     } else {
@@ -174,7 +171,6 @@ function createMapTile(x, y) {
     }
     
     tile.addEventListener('click', () => selectTile(x, y, tileData));
-    tile.addEventListener('mouseenter', () => updateCoordinates(x, y));
     
     return tile;
 }
@@ -215,20 +211,7 @@ function showTileInfo(x, y, tileData) {
     if (tileData) {
         tileDetails.innerHTML = `
             <div class="tile-detail">
-                <strong>Coordinates:</strong>
-                <span>(${x}, ${y})</span>
-            </div>
-            <div class="tile-detail">
-                <strong>Terrain:</strong>
-                <span>${tileData.description}</span>
-            </div>
-            <div class="tile-detail">
-                <strong>Movement Cost:</strong>
-                <span>${tileData.movement_cost}</span>
-            </div>
-            <div class="tile-detail">
-                <strong>Defence Bonus:</strong>
-                <span>${tileData.defence_bonus}</span>
+                <span>(${x}, ${y}) ${tileData.terrain_type} Mov: ${tileData.movement_cost} Def: ${tileData.defence_bonus}</span>
             </div>
         `;
         
@@ -239,15 +222,13 @@ function showTileInfo(x, y, tileData) {
         if (playerArmy) {
             tileDetails.innerHTML += `
                 <div class="tile-detail">
-                    <strong>Your Army:</strong>
-                    <span>${playerArmy.name}</span>
+                    <strong>Your Army:</strong> <span>${playerArmy.name}</span>
                 </div>
             `;
         } else if (enemyArmy) {
             tileDetails.innerHTML += `
                 <div class="tile-detail">
-                    <strong>Enemy Army:</strong>
-                    <span>${enemyArmy.name} (${enemyArmy.player_nick})</span>
+                    <strong>Enemy Army:</strong> <span>${enemyArmy.name} (${enemyArmy.realm_name})</span>
                 </div>
             `;
         }
@@ -256,21 +237,14 @@ function showTileInfo(x, y, tileData) {
     } else {
         tileDetails.innerHTML = `
             <div class="tile-detail">
-                <strong>Coordinates:</strong>
-                <span>(${x}, ${y})</span>
-            </div>
-            <div class="tile-detail">
-                <strong>Status:</strong>
-                <span>Unknown Territory</span>
+                <span>(${x}, ${y}) Unknown Territory</span>
             </div>
         `;
         tileInfo.style.display = 'block';
     }
 }
 
-function updateCoordinates(x, y) {
-    document.getElementById('coordinates').textContent = `Coordinates: (${x}, ${y})`;
-}
+
 
 function updateMapDisplay() {
     const mapGrid = document.getElementById('mapGrid');
