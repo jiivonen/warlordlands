@@ -154,6 +154,244 @@ app.get('/admin', requireAuth, async (req, res) => {
     }
 });
 
+// Dedicated Game Turns admin page
+app.get('/admin/game_turns', requireAuth, async (req, res) => {
+    try {
+        const [rows] = await pool.execute(`
+            SELECT * FROM game_turns 
+            ORDER BY turn_number DESC
+        `);
+        
+        res.render('game_turns', {
+            turns: rows,
+            userNick: req.session.userNick,
+            title: 'Game Turns Management'
+        });
+    } catch (error) {
+        console.error('Error loading game turns:', error);
+        res.status(500).send('Error loading game turns');
+    }
+});
+
+// Game Turns specific routes (must come before generic routes)
+app.get('/admin/game_turns/edit/:id', requireAuth, async (req, res) => {
+    const { id } = req.params;
+    
+    try {
+        const [rows] = await pool.execute('SELECT * FROM game_turns WHERE id = ?', [id]);
+        
+        if (rows.length === 0) {
+            return res.status(404).send('Turn not found');
+        }
+        
+        res.render('game_turns_edit', {
+            turn: rows[0],
+            userNick: req.session.userNick,
+            title: 'Edit Game Turn'
+        });
+    } catch (error) {
+        console.error('Error loading turn for editing:', error);
+        res.status(500).send('Error loading turn');
+    }
+});
+
+app.post('/admin/game_turns/edit/:id', requireAuth, async (req, res) => {
+    const { id } = req.params;
+    const { end_time, command_deadline } = req.body;
+    
+    try {
+        // Server-side validation
+        const now = new Date();
+        const endTime = new Date(end_time);
+        const commandDeadline = new Date(command_deadline);
+        
+        console.log('Server validation:', {
+            now: now.toISOString(),
+            endTime: endTime.toISOString(),
+            commandDeadline: commandDeadline.toISOString()
+        });
+        
+        let validationError = null;
+        
+        // Check if end time is in the future
+        if (endTime <= now) {
+            validationError = 'End time must be in the future!';
+        }
+        
+        // Check if command deadline is in the future
+        if (!validationError && commandDeadline <= now) {
+            validationError = 'Command deadline must be in the future!';
+        }
+        
+        // Check if command deadline is before end time
+        if (!validationError && commandDeadline >= endTime) {
+            validationError = 'Command deadline must be before end time!';
+        }
+        
+        // If validation failed, re-render the form with error
+        if (validationError) {
+            const [rows] = await pool.execute('SELECT * FROM game_turns WHERE id = ?', [id]);
+            
+            if (rows.length === 0) {
+                return res.status(404).send('Turn not found');
+            }
+            
+            return res.render('game_turns_edit', {
+                turn: rows[0],
+                userNick: req.session.userNick,
+                title: 'Edit Game Turn',
+                validationError: validationError,
+                formData: { end_time, command_deadline }
+            });
+        }
+        
+        await pool.execute(
+            'UPDATE game_turns SET end_time = ?, command_deadline = ? WHERE id = ?',
+            [end_time, command_deadline, id]
+        );
+        
+        res.redirect('/admin/game_turns');
+    } catch (error) {
+        console.error('Error updating turn:', error);
+        res.status(500).send('Error updating turn');
+    }
+});
+
+app.get('/admin/game_turns/add', requireAuth, async (req, res) => {
+    try {
+        // Get the next turn number
+        const [maxTurnResult] = await pool.execute('SELECT MAX(turn_number) as maxTurn FROM game_turns');
+        const nextTurnNumber = (maxTurnResult[0].maxTurn || 0) + 1;
+        
+        // Calculate default times
+        const now = new Date();
+        const defaultEndTime = new Date(now.getTime() + 24 * 60 * 60 * 1000); // 24 hours from now
+        const defaultCommandDeadline = new Date(now.getTime() + 20 * 60 * 60 * 1000); // 20 hours from now
+        
+        // Format for datetime-local input
+        const formatDateTime = (date) => {
+            return date.toLocaleString('sv-SE').slice(0, 16);
+        };
+        
+        res.render('game_turns_add', {
+            userNick: req.session.userNick,
+            title: 'Add New Game Turn',
+            nextTurnNumber: nextTurnNumber,
+            defaultEndTime: formatDateTime(defaultEndTime),
+            defaultCommandDeadline: formatDateTime(defaultCommandDeadline)
+        });
+    } catch (error) {
+        console.error('Error loading add form:', error);
+        res.status(500).send('Error loading form');
+    }
+});
+
+app.post('/admin/game_turns/add', requireAuth, async (req, res) => {
+    const { end_time, command_deadline } = req.body;
+    
+    try {
+        // Server-side validation
+        const now = new Date();
+        const endTime = new Date(end_time);
+        const commandDeadline = new Date(command_deadline);
+        
+        console.log('Server validation:', {
+            now: now.toISOString(),
+            endTime: endTime.toISOString(),
+            commandDeadline: commandDeadline.toISOString()
+        });
+        
+        let validationError = null;
+        
+        // Check if end time is in the future
+        if (endTime <= now) {
+            validationError = 'End time must be in the future!';
+        }
+        
+        // Check if command deadline is in the future
+        if (!validationError && commandDeadline <= now) {
+            validationError = 'Command deadline must be in the future!';
+        }
+        
+        // Check if command deadline is before end time
+        if (!validationError && commandDeadline >= endTime) {
+            validationError = 'Command deadline must be before end time!';
+        }
+        
+        // If validation failed, re-render the form with error
+        if (validationError) {
+            // Get the next turn number
+            const [maxTurnResult] = await pool.execute('SELECT MAX(turn_number) as maxTurn FROM game_turns');
+            const nextTurnNumber = (maxTurnResult[0].maxTurn || 0) + 1;
+            
+            // Calculate default times
+            const defaultEndTime = new Date(now.getTime() + 24 * 60 * 60 * 1000);
+            const defaultCommandDeadline = new Date(now.getTime() + 20 * 60 * 60 * 1000);
+            
+            const formatDateTime = (date) => {
+                return date.toLocaleString('sv-SE').slice(0, 16);
+            };
+            
+            return res.render('game_turns_add', {
+                userNick: req.session.userNick,
+                title: 'Add New Game Turn',
+                nextTurnNumber: nextTurnNumber,
+                defaultEndTime: formatDateTime(defaultEndTime),
+                defaultCommandDeadline: formatDateTime(defaultCommandDeadline),
+                validationError: validationError,
+                formData: { end_time, command_deadline }
+            });
+        }
+        
+        // Get the next turn number
+        const [maxTurnResult] = await pool.execute('SELECT MAX(turn_number) as maxTurn FROM game_turns');
+        const nextTurnNumber = (maxTurnResult[0].maxTurn || 0) + 1;
+        
+        // Start transaction to handle both operations
+        const connection = await pool.getConnection();
+        await connection.beginTransaction();
+        
+        try {
+            // End the current active turn if it exists
+            // Set both end_time and command_deadline to now to satisfy constraints
+            await connection.execute(
+                'UPDATE game_turns SET status = ?, end_time = ?, command_deadline = ? WHERE status = ?',
+                ['completed', now, now, 'active']
+            );
+            
+            // Insert the new turn - start time should be slightly after now to avoid constraint violation
+            const newStartTime = new Date(now.getTime() + 1000); // 1 second after now
+            await connection.execute(
+                'INSERT INTO game_turns (turn_number, start_time, end_time, command_deadline, status) VALUES (?, ?, ?, ?, ?)',
+                [nextTurnNumber, newStartTime, end_time, command_deadline, 'active']
+            );
+            
+            await connection.commit();
+            res.redirect('/admin/game_turns');
+        } catch (error) {
+            await connection.rollback();
+            throw error;
+        } finally {
+            connection.release();
+        }
+    } catch (error) {
+        console.error('Error adding turn:', error);
+        res.status(500).send('Error adding turn');
+    }
+});
+
+app.post('/admin/game_turns/delete/:id', requireAuth, async (req, res) => {
+    const { id } = req.params;
+    
+    try {
+        await pool.execute('DELETE FROM game_turns WHERE id = ?', [id]);
+        res.status(200).json({ success: true });
+    } catch (error) {
+        console.error('Error deleting turn:', error);
+        res.status(500).json({ success: false, error: 'Error deleting turn' });
+    }
+});
+
 // Generic table listing route
 app.get('/admin/:table', requireAuth, async (req, res) => {
     const tableName = req.params.table;
@@ -269,6 +507,8 @@ app.post('/admin/:table/delete/:id', requireAuth, async (req, res) => {
         res.status(500).send('Error deleting record');
     }
 });
+
+
 
 // Helper function to get display names
 function getDisplayName(tableName) {

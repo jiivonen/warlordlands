@@ -1,0 +1,274 @@
+
+
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1>✏️ Edit Game Turn</h1>
+        <a href="/admin/game_turns" class="btn btn-secondary">← Back to Game Turns</a>
+    </div>
+
+    <div class="card">
+        <div class="card-header">
+            <h5 class="mb-0">Turn <%= turn.turn_number %> Details</h5>
+        </div>
+        <div class="card-body">
+            <form method="POST" action="/admin/game_turns/edit/<%= turn.id %>">
+                <div class="row">
+                                         <div class="col-md-4">
+                         <div class="mb-3">
+                             <label for="turn_number" class="form-label">Turn Number</label>
+                             <input type="text" 
+                                    class="form-control" 
+                                    id="turn_number" 
+                                    value="<%= turn.turn_number %>" 
+                                    readonly 
+                                    disabled>
+                             <div class="form-text">Turn number cannot be changed</div>
+                         </div>
+                     </div>
+                     <div class="col-md-4">
+                         <div class="mb-3">
+                             <label for="status" class="form-label">Status</label>
+                             <input type="text" 
+                                    class="form-control" 
+                                    id="status" 
+                                    value="<%= turn.status === 'pending' ? '⏳ Pending' : turn.status === 'active' ? '🔄 Active' : '✅ Completed' %>" 
+                                    readonly 
+                                    disabled>
+                             <div class="form-text">Status cannot be changed</div>
+                         </div>
+                     </div>
+                     <div class="col-md-4">
+                         <div class="mb-3">
+                             <label for="start_time" class="form-label">Start Time</label>
+                             <input type="text" 
+                                    class="form-control" 
+                                    id="start_time" 
+                                    value="<%= new Date(turn.start_time).toLocaleString() %>" 
+                                    readonly 
+                                    disabled>
+                             <div class="form-text">Start time cannot be changed</div>
+                         </div>
+                     </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label for="end_time" class="form-label">End Time</label>
+                                                         <input type="datetime-local" 
+                                    class="form-control" 
+                                    id="end_time" 
+                                    name="end_time" 
+                                    value="<%= typeof formData !== 'undefined' ? formData.end_time : new Date(turn.end_time).toLocaleString('sv-SE').slice(0, 16) %>" 
+                                    required>
+                            <div class="form-text">Must be in the future</div>
+                            <div id="end_time_validation" class="form-text text-danger" style="display: none;"></div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label for="command_deadline" class="form-label">Command Deadline</label>
+                                                         <input type="datetime-local" 
+                                    class="form-control" 
+                                    id="command_deadline" 
+                                    name="command_deadline" 
+                                    value="<%= typeof formData !== 'undefined' ? formData.command_deadline : new Date(turn.command_deadline).toLocaleString('sv-SE').slice(0, 16) %>" 
+                                    required>
+                            <div class="form-text">Must be in the future and before end time</div>
+                            <div id="command_deadline_validation" class="form-text text-danger" style="display: none;"></div>
+                        </div>
+                    </div>
+                </div>
+
+                                 <% if (typeof validationError !== 'undefined' && validationError) { %>
+                     <div class="alert alert-danger">
+                         <strong>❌ Validation Error:</strong> <%= validationError %>
+                     </div>
+                 <% } %>
+                 
+                 <div class="alert alert-info">
+                     <strong>💡 Tip:</strong> Only end time and command deadline can be edited. Both must be in the future, and command deadline must be before end time. Turn number, status, and start time are read-only.
+                 </div>
+
+                <div class="d-flex gap-2">
+                    <button type="submit" class="btn btn-primary">
+                        💾 Save Changes
+                    </button>
+                    <a href="/admin/game_turns" class="btn btn-outline-secondary">
+                        ❌ Cancel
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+console.log('Script loaded - setting up validation...');
+
+// Validate form before submission
+function validateForm(e) {
+    console.log('Form submission intercepted!');
+    
+    const endTimeInput = document.getElementById('end_time').value;
+    const commandDeadlineInput = document.getElementById('command_deadline').value;
+    
+    console.log('Input values:', { endTimeInput, commandDeadlineInput });
+    
+    // Check if inputs have values
+    if (!endTimeInput || !commandDeadlineInput) {
+        e.preventDefault();
+        alert('Please fill in both end time and command deadline!');
+        return false;
+    }
+    
+    // Get current time in local timezone
+    const now = new Date();
+    const nowLocal = new Date(now.getTime() - (now.getTimezoneOffset() * 60000));
+    
+    // Create Date objects from the datetime-local inputs (they are already in local time)
+    const endTime = new Date(endTimeInput);
+    const commandDeadline = new Date(commandDeadlineInput);
+    
+    console.log('Validation check:', {
+        now: now.toISOString(),
+        nowLocal: nowLocal.toISOString(),
+        endTime: endTime.toISOString(),
+        commandDeadline: commandDeadline.toISOString(),
+        endTimeInput: endTimeInput,
+        commandDeadlineInput: commandDeadlineInput
+    });
+    
+    // Check if end time is in the future
+    if (endTime <= nowLocal) {
+        e.preventDefault();
+        alert('End time must be in the future! Current time: ' + nowLocal.toLocaleString() + ', End time: ' + endTime.toLocaleString());
+        return false;
+    }
+    
+    // Check if command deadline is in the future
+    if (commandDeadline <= nowLocal) {
+        e.preventDefault();
+        alert('Command deadline must be in the future! Current time: ' + nowLocal.toLocaleString() + ', Command deadline: ' + commandDeadline.toLocaleString());
+        return false;
+    }
+    
+    // Check if command deadline is before end time
+    if (commandDeadline >= endTime) {
+        e.preventDefault();
+        alert('Command deadline must be before end time! Command deadline: ' + commandDeadline.toLocaleString() + ', End time: ' + endTime.toLocaleString());
+        return false;
+    }
+    
+    console.log('Validation passed!');
+    return true;
+}
+
+// Wait for DOM to be ready
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('DOM loaded - attaching form validation...');
+    
+    const form = document.querySelector('form');
+    if (form) {
+        console.log('Form found, attaching submit listener...');
+        form.addEventListener('submit', validateForm);
+    } else {
+        console.error('Form not found!');
+    }
+    
+    // Also attach to the submit button as backup
+    const submitButton = document.querySelector('button[type="submit"]');
+    if (submitButton) {
+        console.log('Submit button found, attaching click listener...');
+        submitButton.addEventListener('click', function(e) {
+            console.log('Submit button clicked!');
+            if (!validateForm(e)) {
+                e.preventDefault();
+                e.stopPropagation();
+            }
+        });
+    }
+});
+
+// Real-time validation
+function validateEndTime() {
+    const endTimeInput = document.getElementById('end_time').value;
+    const validationDiv = document.getElementById('end_time_validation');
+    
+    if (!endTimeInput) {
+        validationDiv.style.display = 'none';
+        return;
+    }
+    
+    // Get current time in local timezone
+    const now = new Date();
+    const nowLocal = new Date(now.getTime() - (now.getTimezoneOffset() * 60000));
+    const endTime = new Date(endTimeInput);
+    
+    if (endTime <= nowLocal) {
+        validationDiv.textContent = 'End time must be in the future!';
+        validationDiv.style.display = 'block';
+    } else {
+        validationDiv.style.display = 'none';
+    }
+}
+
+function validateCommandDeadline() {
+    const commandDeadlineInput = document.getElementById('command_deadline').value;
+    const endTimeInput = document.getElementById('end_time').value;
+    const validationDiv = document.getElementById('command_deadline_validation');
+    
+    if (!commandDeadlineInput) {
+        validationDiv.style.display = 'none';
+        return;
+    }
+    
+    // Get current time in local timezone
+    const now = new Date();
+    const nowLocal = new Date(now.getTime() - (now.getTimezoneOffset() * 60000));
+    const commandDeadline = new Date(commandDeadlineInput);
+    
+    if (commandDeadline <= nowLocal) {
+        validationDiv.textContent = 'Command deadline must be in the future!';
+        validationDiv.style.display = 'block';
+    } else if (endTimeInput) {
+        const endTime = new Date(endTimeInput);
+        if (commandDeadline >= endTime) {
+            validationDiv.textContent = 'Command deadline must be before end time!';
+            validationDiv.style.display = 'block';
+        } else {
+            validationDiv.style.display = 'none';
+        }
+    } else {
+        validationDiv.style.display = 'none';
+    }
+}
+
+// Add event listeners for real-time validation
+document.getElementById('end_time').addEventListener('input', validateEndTime);
+document.getElementById('command_deadline').addEventListener('input', validateCommandDeadline);
+
+// Initial validation on page load
+document.addEventListener('DOMContentLoaded', function() {
+    validateEndTime();
+    validateCommandDeadline();
+});
+</script>
+
+<style>
+.form-label {
+    font-weight: 600;
+    color: #495057;
+}
+
+.form-control:focus, .form-select:focus {
+    border-color: #0d6efd;
+    box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
+}
+
+.alert-info {
+    background-color: rgba(13, 202, 240, 0.1);
+    border-color: rgba(13, 202, 240, 0.3);
+    color: #055160;
+}
+</style>
