@@ -29,8 +29,6 @@
     overflow: auto;
     background: #f8f9fa;
     position: relative;
-    min-height: 400px;
-    max-height: 600px;
     padding: 1rem;
 }
 
@@ -82,6 +80,59 @@
     transform: scale(1.1);
     z-index: 10;
     box-shadow: 0 0 15px rgba(231, 76, 60, 0.5);
+}
+
+/* Move mode highlighting */
+.map-tile.move-start {
+    border: 3px solid #27ae60;
+    background: rgba(39, 174, 96, 0.3);
+    transform: scale(1.1);
+    z-index: 10;
+    box-shadow: 0 0 15px rgba(39, 174, 96, 0.5);
+}
+
+.map-tile.move-path {
+    border: 3px solid #3498db;
+    background: rgba(52, 152, 219, 0.3);
+    transform: scale(1.05);
+    z-index: 9;
+    box-shadow: 0 0 10px rgba(52, 152, 219, 0.4);
+}
+
+.map-tile.move-end {
+    border: 3px solid #e67e22;
+    background: rgba(230, 126, 34, 0.3);
+    transform: scale(1.1);
+    z-index: 10;
+    box-shadow: 0 0 15px rgba(230, 126, 34, 0.5);
+}
+
+/* Path display styles */
+.path-display {
+    background: #f8f9fa;
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+    padding: 1rem;
+    margin-bottom: 1rem;
+}
+
+.path-step {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.5rem;
+    padding: 0.25rem 0.5rem;
+    background: white;
+    border-radius: 4px;
+    border: 1px solid #e9ecef;
+}
+
+.path-step:last-child {
+    margin-bottom: 0;
+}
+
+.path-step .badge {
+    min-width: 60px;
 }
 
 
@@ -226,8 +277,22 @@
 
 .tile-detail {
     margin-bottom: 0.5rem;
-    display: flex;
-    justify-content: space-between;
+    padding: 0.5rem;
+    border-bottom: 1px solid #e9ecef;
+}
+
+.tile-detail:last-child {
+    border-bottom: none;
+}
+
+.tile-detail strong {
+    color: #2c3e50;
+    display: block;
+    margin-bottom: 0.25rem;
+}
+
+.tile-detail .btn {
+    margin-top: 0.5rem;
 }
 
 .tile-detail strong {

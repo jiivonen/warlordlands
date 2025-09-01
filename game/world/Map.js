@@ -248,7 +248,11 @@ class Map {
         try {
             const visibleTiles = await this.getVisibleTiles(playerId, 15);
             const [playerArmies] = await this.dbPool.execute(
-                `SELECT a.*, r.name as realm_name 
+                `SELECT a.*, r.name as realm_name,
+                        (SELECT MIN(uc.strategic_speed) 
+                         FROM unit u 
+                         JOIN unit_classes uc ON u.unit_class_id = uc.id 
+                         WHERE u.army_id = a.id) as strategic_speed
                  FROM army a 
                  JOIN realm r ON a.realm_id = r.id 
                  WHERE r.player_id = ?`,

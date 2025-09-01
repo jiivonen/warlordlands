@@ -4,6 +4,11 @@
 </p>
 
 <div class="map-container">
+    <!-- Notification system -->
+    <div id="notificationContainer" style="position: fixed; top: 20px; left: 50%; transform: translateX(-50%); z-index: 1002; display: none;">
+        <div id="notificationMessage" class="alert" style="margin: 0; padding: 15px 25px; border-radius: 8px; font-weight: bold; min-width: 300px; text-align: center;"></div>
+    </div>
+    
     <div class="map-controls">
         <button id="zoomIn" class="btn btn-primary">🔍+</button>
         <button id="zoomOut" class="btn btn-primary">🔍-</button>
@@ -50,12 +55,32 @@
     </div>
 </div>
 
-
-
 <script>
 let currentZoom = 1;
 let mapData = null;
 let selectedTile = null;
+let moveMode = false;
+let selectedArmy = null;
+let movePath = [];
+let maxMoves = 1;
+
+// Notification system
+function showNotification(message, type = 'info') {
+    const container = document.getElementById('notificationContainer');
+    const messageEl = document.getElementById('notificationMessage');
+    
+    // Set message and styling based on type
+    messageEl.textContent = message;
+    messageEl.className = `alert alert-${type}`;
+    
+    // Show notification
+    container.style.display = 'block';
+    
+    // Auto-hide after 3 seconds
+    setTimeout(() => {
+        container.style.display = 'none';
+    }, 3000);
+}
 
 // Initialize map
 document.addEventListener('DOMContentLoaded', function() {
@@ -87,10 +112,10 @@ async function loadMapData() {
             renderMap();
             centerOnPlayerArmies();
         } else {
-            console.error('Failed to load map data');
+            showNotification('Failed to load map data', 'danger');
         }
     } catch (error) {
-        console.error('Error loading map data:', error);
+        showNotification('Error loading map data', 'danger');
     }
 }
 
@@ -188,6 +213,11 @@ function getTerrainIcon(terrainType) {
 }
 
 function selectTile(x, y, tileData) {
+    if (moveMode) {
+        handleMoveTileSelection(x, y, tileData);
+        return;
+    }
+    
     // Remove previous selection
     if (selectedTile) {
         selectedTile.classList.remove('selected');
@@ -223,8 +253,29 @@ function showTileInfo(x, y, tileData) {
             tileDetails.innerHTML += `
                 <div class="tile-detail">
                     <strong>Your Army:</strong> <span>${playerArmy.name}</span>
+                    <br>
+                    <strong>Strategic Speed:</strong> <span>${playerArmy.strategic_speed || 1}</span>
                 </div>
             `;
+            
+            // Add move button if army doesn't have a command
+            checkArmyCommandStatus(playerArmy.id).then(hasCommand => {
+                if (!hasCommand) {
+                    tileDetails.innerHTML += `
+                        <div class="tile-detail">
+                            <button class="btn btn-sm btn-primary" onclick="startMove(${playerArmy.id}, ${x}, ${y}, ${playerArmy.strategic_speed || 1})">
+                                Move Army
+                            </button>
+                        </div>
+                    `;
+                } else {
+                    tileDetails.innerHTML += `
+                        <div class="tile-detail">
+                            <span class="badge bg-warning">Has Command</span>
+                        </div>
+                    `;
+                }
+            });
         } else if (enemyArmy) {
             tileDetails.innerHTML += `
                 <div class="tile-detail">
@@ -244,7 +295,258 @@ function showTileInfo(x, y, tileData) {
     }
 }
 
+async function checkArmyCommandStatus(armyId) {
+    try {
+        const response = await fetch(`/api/commands/army/${armyId}`);
+        const data = await response.json();
+        return data.hasCommand;
+    } catch (error) {
+        return false;
+    }
+}
 
+function startMove(armyId, startX, startY, speed) {
+    selectedArmy = { id: armyId, x: startX, y: startY };
+    maxMoves = speed;
+    movePath = [{ x: startX, y: startY }];
+    moveMode = true;
+    
+    // Add visual indicator that move mode is active with integrated controls
+    const mapContainer = document.querySelector('.map-container');
+    if (mapContainer) {
+        const moveIndicator = document.createElement('div');
+        moveIndicator.id = 'moveModeIndicator';
+        moveIndicator.style.cssText = 'position: fixed; top: 20px; right: 20px; background: #e74c3c; color: white; padding: 15px; border-radius: 8px; z-index: 1000; font-weight: bold; min-width: 320px; max-width: 400px;';
+        
+        moveIndicator.innerHTML = `
+            <div style="margin-bottom: 10px; font-size: 16px; text-align: center;">MOVE MODE ACTIVE</div>
+            <div style="font-size: 12px; margin-bottom: 15px; text-align: center;">
+                <strong>Army Speed:</strong> ${speed} | <strong>Start:</strong> (${startX}, ${startY})
+            </div>
+            <div id="pathDisplay" style="background: rgba(255,255,255,0.2); padding: 8px; border-radius: 4px; margin-bottom: 15px; font-size: 11px; max-height: 150px; overflow-y: auto;">
+                <div style="margin-bottom: 5px; text-align: center;"><strong>Path:</strong></div>
+                <div id="pathSteps"></div>
+            </div>
+            <div style="display: flex; gap: 10px; justify-content: center;">
+                <button onclick="commitMove()" id="commitMoveBtn" disabled style="padding: 8px 20px; background: #27ae60; border: none; color: white; border-radius: 4px; cursor: pointer; font-size: 12px; font-weight: bold;">Commit Move</button>
+                <button onclick="cancelMove()" style="padding: 8px 20px; background: #95a5a6; border: none; color: white; border-radius: 4px; cursor: pointer; font-size: 12px; font-weight: bold;">Cancel</button>
+            </div>
+            <div style="font-size: 10px; margin-top: 10px; opacity: 0.8; text-align: center;">
+                Click adjacent tiles to build path. First move: 8 directions, then 4 directions only.
+            </div>
+        `;
+        
+        mapContainer.appendChild(moveIndicator);
+        
+        // Initialize path display
+        updatePathDisplay();
+    }
+    
+    // Highlight start tile
+    highlightMovePath();
+}
+
+function handleMoveTileSelection(x, y, tileData) {
+    if (!selectedArmy || !tileData) return;
+    
+    const lastPosition = movePath[movePath.length - 1];
+    const distance = Math.abs(x - lastPosition.x) + Math.abs(y - lastPosition.y);
+    
+    // Check if tile is adjacent
+    if (distance !== 1) {
+        showNotification('Can only move to adjacent tiles', 'warning');
+        return;
+    }
+    
+    // Check if this is a valid move based on current path length
+    if (movePath.length === 1) {
+        // First move: any adjacent tile is fine
+        if (tileData.terrain_type === 'open') {
+            movePath.push({ x, y });
+        } else {
+            // Non-open terrain ends movement
+            movePath.push({ x, y });
+            finalizeMovePath();
+            return;
+        }
+    } else if (movePath.length < maxMoves) {
+        // Additional moves: only cardinal directions
+        const dx = x - lastPosition.x;
+        const dy = y - lastPosition.y;
+        
+        if (Math.abs(dx) + Math.abs(dy) === 1) {
+            if (tileData.terrain_type === 'open') {
+                movePath.push({ x, y });
+            } else {
+                // Non-open terrain ends movement
+                movePath.push({ x, y });
+                finalizeMovePath();
+                return;
+            }
+        } else {
+            showNotification('Additional moves must be in cardinal directions (up, down, left, right)', 'warning');
+            return;
+        }
+    } else {
+        showNotification('Maximum moves reached for this army', 'warning');
+        return;
+    }
+    
+    // Check if we've reached max moves or hit non-open terrain
+    if (movePath.length >= maxMoves || tileData.terrain_type !== 'open') {
+        finalizeMovePath();
+    }
+    
+    updatePathDisplay();
+    highlightMovePath();
+}
+
+function finalizeMovePath() {
+    document.getElementById('commitMoveBtn').disabled = false;
+}
+
+function updatePathDisplay() {
+    const pathSteps = document.getElementById('pathSteps');
+    if (!pathSteps) return;
+    
+    let html = `
+        <div style="margin-bottom: 3px; padding: 2px 6px; background: rgba(52, 152, 219, 0.8); border-radius: 3px; display: inline-block; margin-right: 5px;">
+            Start
+        </div>
+        <span>(${movePath[0].x}, ${movePath[0].y})</span>
+    `;
+    
+    for (let i = 1; i < movePath.length; i++) {
+        const step = movePath[i];
+        const stepNumber = i;
+        html += `
+            <div style="margin-top: 3px;">
+                <div style="margin-bottom: 3px; padding: 2px 6px; background: rgba(155, 89, 182, 0.8); border-radius: 3px; display: inline-block; margin-right: 5px;">
+                    Step ${stepNumber}
+                </div>
+                <span>(${step.x}, ${step.y})</span>
+            </div>
+        `;
+    }
+    
+    pathSteps.innerHTML = html;
+}
+
+function highlightMovePath() {
+    // Remove previous highlights
+    document.querySelectorAll('.map-tile').forEach(tile => {
+        tile.classList.remove('move-start', 'move-path', 'move-end');
+    });
+    
+    // Highlight current path
+    movePath.forEach((step, index) => {
+        const tile = document.querySelector(`[data-x="${step.x}"][data-y="${step.y}"]`);
+        if (tile) {
+            if (index === 0) {
+                tile.classList.add('move-start');
+            } else if (index === movePath.length - 1) {
+                tile.classList.add('move-end');
+            } else {
+                tile.classList.add('move-path');
+            }
+        }
+    });
+}
+
+function endMoveMode() {
+    moveMode = false;
+    selectedArmy = null;
+    movePath = [];
+    
+    // Remove move mode indicator
+    const moveIndicator = document.getElementById('moveModeIndicator');
+    if (moveIndicator) {
+        moveIndicator.remove();
+    }
+    
+    // Remove highlights
+    document.querySelectorAll('.map-tile').forEach(tile => {
+        tile.classList.remove('move-start', 'move-path', 'move-end');
+    });
+    
+    // Show confirmation message
+    showMoveModeEndedMessage();
+}
+
+function showMoveModeEndedMessage() {
+    // Create a temporary success message
+    const message = document.createElement('div');
+    message.style.cssText = 'position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #27ae60; color: white; padding: 15px 25px; border-radius: 8px; z-index: 1001; font-weight: bold; font-size: 16px;';
+    message.textContent = 'Move Mode Ended';
+    
+    document.body.appendChild(message);
+    
+    // Remove the message after 2 seconds
+    setTimeout(() => {
+        if (message.parentNode) {
+            message.parentNode.removeChild(message);
+        }
+    }, 2000);
+}
+
+function cancelMove() {
+    // Store the current tile position before ending move mode
+    const currentTileX = selectedArmy.x;
+    const currentTileY = selectedArmy.y;
+    
+    endMoveMode();
+    
+    // Refresh tile info to show current state
+    const tileData = mapData.visibleTiles.find(tile => tile.x_coord === currentTileX && tile.y_coord === currentTileY);
+    if (tileData) {
+        selectTile(currentTileX, currentTileY, tileData);
+    }
+}
+
+async function commitMove() {
+    if (!selectedArmy || movePath.length < 2) {
+        showNotification('Invalid move path', 'warning');
+        return;
+    }
+    
+    try {
+        const response = await fetch('/api/commands/move', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                armyId: selectedArmy.id,
+                path: movePath
+            })
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+            showNotification('Move command created successfully!', 'success');
+            
+            // Store the current tile position before ending move mode
+            const currentTileX = selectedArmy.x;
+            const currentTileY = selectedArmy.y;
+            
+            endMoveMode();
+            
+            // Refresh map data to show updated command status
+            await loadMapData();
+            
+            // After map refresh, restore the tile selection to show updated info
+            const tileData = mapData.visibleTiles.find(tile => tile.x_coord === currentTileX && tile.y_coord === currentTileY);
+            if (tileData) {
+                selectTile(currentTileX, currentTileY, tileData);
+            }
+        } else {
+            showNotification('Error creating move command: ' + data.error, 'danger');
+        }
+    } catch (error) {
+        showNotification('Error creating move command', 'danger');
+    }
+}
 
 function updateMapDisplay() {
     const mapGrid = document.getElementById('mapGrid');

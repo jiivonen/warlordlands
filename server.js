@@ -276,6 +276,78 @@ app.get('/api/map/data', requireAuth, async (req, res) => {
     }
 });
 
+// Commands API endpoints
+app.post('/api/commands/move', requireAuth, async (req, res) => {
+    try {
+        const { armyId, path } = req.body;
+        
+        // Validate the request
+        if (!armyId || !path || !Array.isArray(path) || path.length === 0) {
+            return res.status(400).json({ error: 'Invalid move command data' });
+        }
+        
+        // Get current game turn
+        const [currentTurn] = await pool.execute(
+            'SELECT id FROM game_turns WHERE status = "active" LIMIT 1'
+        );
+        
+        if (currentTurn.length === 0) {
+            return res.status(400).json({ error: 'No active game turn' });
+        }
+        
+        // Check if army already has a command for this turn
+        const [existingCommand] = await pool.execute(
+            'SELECT id FROM commands WHERE army_id = ? AND game_turn_id = ? AND status IN ("pending", "processing")',
+            [armyId, currentTurn[0].id]
+        );
+        
+        if (existingCommand.length > 0) {
+            return res.status(400).json({ error: 'Army already has a command for this turn' });
+        }
+        
+        // Create move command
+        const commandData = JSON.stringify({ path });
+        await pool.execute(
+            'INSERT INTO commands (player_id, army_id, game_turn_id, command_type, command_data, status) VALUES (?, ?, ?, ?, ?, ?)',
+            [req.session.playerId, armyId, currentTurn[0].id, 'move', commandData, 'pending']
+        );
+        
+        res.json({ success: true, message: 'Move command created successfully' });
+    } catch (error) {
+        console.error('Move command error:', error);
+        res.status(500).json({ error: 'Failed to create move command' });
+    }
+});
+
+app.get('/api/commands/army/:armyId', requireAuth, async (req, res) => {
+    try {
+        const { armyId } = req.params;
+        
+        // Get current game turn
+        const [currentTurn] = await pool.execute(
+            'SELECT id FROM game_turns WHERE status = "active" LIMIT 1'
+        );
+        
+        if (currentTurn.length === 0) {
+            return res.json({ hasCommand: false });
+        }
+        
+        // Check if army has a command for this turn
+        const [command] = await pool.execute(
+            'SELECT id, status FROM commands WHERE army_id = ? AND game_turn_id = ? AND status IN ("pending", "processing")',
+            [armyId, currentTurn[0].id]
+        );
+        
+        res.json({ 
+            hasCommand: command.length > 0,
+            commandStatus: command.length > 0 ? command[0].status : null
+        });
+    } catch (error) {
+        console.error('Command check error:', error);
+        res.status(500).json({ error: 'Failed to check command status' });
+    }
+});
+
 
 
 // Start server
