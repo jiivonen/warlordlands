@@ -7,6 +7,7 @@ const path = require('path');
 const expressLayouts = require('express-ejs-layouts');
 require('dotenv').config();
 
+
 const app = express();
 const PORT = process.env.ADMIN_PORT || 3030;
 
@@ -163,10 +164,17 @@ app.get('/admin/game_turns', requireAuth, async (req, res) => {
             ORDER BY turn_number DESC
         `);
         
+        // Get any success message from session
+        const turnMessage = req.session.turnMessage;
+        if (req.session.turnMessage) {
+            delete req.session.turnMessage; // Clear after reading
+        }
+        
         res.render('game_turns', {
             turns: rows,
             userNick: req.session.userNick,
-            title: 'Game Turns Management'
+            title: 'Game Turns Management',
+            turnMessage: turnMessage
         });
     } catch (error) {
         console.error('Error loading game turns:', error);
@@ -353,6 +361,27 @@ app.post('/admin/game_turns/add', requireAuth, async (req, res) => {
         await connection.beginTransaction();
         
         try {
+            // Get the current active turn before we end it
+            const [currentTurnResult] = await connection.execute(
+                'SELECT * FROM game_turns WHERE status = ? ORDER BY turn_number DESC LIMIT 1',
+                ['active']
+            );
+            
+            let commandResults = null;
+            
+            // If there's an active turn, process its commands first
+            if (currentTurnResult.length > 0) {
+                const currentTurn = currentTurnResult[0];
+                console.log(`Processing commands for turn ${currentTurn.turn_number} before creating new turn...`);
+                
+                // Process pending commands for the current turn
+                const GameTurnManager = require('../game/systems/GameTurnManager');
+                const gameTurnManager = new GameTurnManager(connection);
+                commandResults = await gameTurnManager.processPendingCommands(currentTurn.id);
+                
+                console.log(`Command processing results:`, commandResults);
+            }
+            
             // End the current active turn if it exists
             // Set both end_time and command_deadline to now to satisfy constraints
             await connection.execute(
@@ -368,6 +397,14 @@ app.post('/admin/game_turns/add', requireAuth, async (req, res) => {
             );
             
             await connection.commit();
+            
+            // Show success message with command processing results
+            if (commandResults) {
+                req.session.turnMessage = `New turn ${nextTurnNumber} created successfully! Processed ${commandResults.processed} commands (${commandResults.succeeded} succeeded, ${commandResults.failed} failed).`;
+            } else {
+                req.session.turnMessage = `New turn ${nextTurnNumber} created successfully!`;
+            }
+            
             res.redirect('/admin/game_turns');
         } catch (error) {
             await connection.rollback();

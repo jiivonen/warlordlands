@@ -5,6 +5,7 @@ const bcrypt = require('bcrypt');
 const bodyParser = require('body-parser');
 const path = require('path');
 const expressLayouts = require('express-ejs-layouts');
+const TurnScheduler = require('./game/systems/TurnScheduler');
 require('dotenv').config();
 
 const app = express();
@@ -54,6 +55,18 @@ async function initializeDatabase() {
     } catch (error) {
         console.error('Database connection failed:', error);
         process.exit(1);
+    }
+}
+
+// Initialize turn scheduler
+let turnScheduler;
+async function initializeTurnScheduler() {
+    try {
+        turnScheduler = new TurnScheduler(pool, 15); // Check every 15 minutes
+        turnScheduler.start();
+        console.log('Turn scheduler started successfully');
+    } catch (error) {
+        console.error('Failed to start turn scheduler:', error);
     }
 }
 
@@ -353,8 +366,11 @@ app.get('/api/commands/army/:armyId', requireAuth, async (req, res) => {
 // Start server
 async function startServer() {
     await initializeDatabase();
-    app.listen(PORT, () => {
+    app.listen(PORT, async () => {
         console.log(`Game server running on http://localhost:${PORT}`);
+        
+        // Initialize turn scheduler after server starts
+        await initializeTurnScheduler();
     });
 }
 
