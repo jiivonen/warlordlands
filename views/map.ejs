@@ -350,31 +350,30 @@ function handleMoveTileSelection(x, y, tileData) {
     if (!selectedArmy || !tileData) return;
     
     const lastPosition = movePath[movePath.length - 1];
-    const distance = Math.abs(x - lastPosition.x) + Math.abs(y - lastPosition.y);
-    
-    // Check if tile is adjacent
-    if (distance !== 1) {
-        showNotification('Can only move to adjacent tiles', 'warning');
-        return;
-    }
+    const dx = x - lastPosition.x;
+    const dy = y - lastPosition.y;
+    const isDiagonal = Math.abs(dx) === 1 && Math.abs(dy) === 1;
+    const isCardinal = (Math.abs(dx) === 1 && dy === 0) || (dx === 0 && Math.abs(dy) === 1);
     
     // Check if this is a valid move based on current path length
     if (movePath.length === 1) {
-        // First move: any adjacent tile is fine
-        if (tileData.terrain_type === 'open') {
-            movePath.push({ x, y });
+        // First move: any adjacent tile is fine (including diagonal)
+        if (Math.abs(dx) <= 1 && Math.abs(dy) <= 1 && (dx !== 0 || dy !== 0)) {
+            if (tileData.terrain_type === 'open') {
+                movePath.push({ x, y });
+            } else {
+                // Non-open terrain ends movement
+                movePath.push({ x, y });
+                finalizeMovePath();
+                return;
+            }
         } else {
-            // Non-open terrain ends movement
-            movePath.push({ x, y });
-            finalizeMovePath();
+            showNotification('Can only move to adjacent tiles', 'warning');
             return;
         }
-    } else if (movePath.length < maxMoves) {
+    } else if (movePath.length <= maxMoves) {
         // Additional moves: only cardinal directions
-        const dx = x - lastPosition.x;
-        const dy = y - lastPosition.y;
-        
-        if (Math.abs(dx) + Math.abs(dy) === 1) {
+        if (isCardinal) {
             if (tileData.terrain_type === 'open') {
                 movePath.push({ x, y });
             } else {
