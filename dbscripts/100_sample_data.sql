@@ -1,6 +1,36 @@
 -- Sample data for testing
 USE warlordlands;
 
+-- Clear existing data to allow reloading
+-- Delete in reverse order of dependencies to avoid foreign key constraint issues
+DELETE FROM commands;
+DELETE FROM unit;
+DELETE FROM army;
+DELETE FROM game_turns;
+DELETE FROM unit_classes_keywords;
+DELETE FROM unit_classes;
+DELETE FROM keywords;
+DELETE FROM unit_type;
+DELETE FROM map;
+DELETE FROM terrain_types;
+DELETE FROM realm;
+DELETE FROM player;
+DELETE FROM users;
+
+-- Reset auto-increment counters
+ALTER TABLE commands AUTO_INCREMENT = 1;
+ALTER TABLE unit AUTO_INCREMENT = 1;
+ALTER TABLE army AUTO_INCREMENT = 1;
+ALTER TABLE game_turns AUTO_INCREMENT = 1;
+ALTER TABLE unit_classes AUTO_INCREMENT = 1;
+ALTER TABLE keywords AUTO_INCREMENT = 1;
+ALTER TABLE unit_type AUTO_INCREMENT = 1;
+ALTER TABLE map AUTO_INCREMENT = 1;
+ALTER TABLE terrain_types AUTO_INCREMENT = 1;
+ALTER TABLE realm AUTO_INCREMENT = 1;
+ALTER TABLE player AUTO_INCREMENT = 1;
+ALTER TABLE users AUTO_INCREMENT = 1;
+
 -- Insert sample admin user
 -- Note: In production, use proper password hashing (e.g., bcrypt)
 -- Password: admin123 (bcrypt hash with salt rounds 10)
@@ -132,21 +162,6 @@ INSERT INTO unit_classes_keywords (unit_class_id, keyword) VALUES
 (4, 'flying'), -- Dragon can fly
 (5, 'chaos');  -- Hero is chaotic
 
--- Insert sample commands for testing
--- Commands for completed turn 1 can only be completed or failed
-INSERT INTO commands (player_id, army_id, game_turn_id, command_type, command_data, status) VALUES
-(@player1_id, @first_army_id, 1, 'move', '{"target_x": 10, "target_y": 15}', 'completed'),
-(@player1_id, @first_army_id, 1, 'attack', '{"target_x": 2, "target_y": 0}', 'failed'),
-(@player2_id, @invasion_force_id, 1, 'create_unit', '{"unit_class_id": 1, "name": "New Warrior"}', 'completed'),
-(@player2_id, @invasion_force_id, 1, 'move', '{"target_x": -5, "target_y": 8}', 'failed');
-
--- Commands for current active turn 5 can be pending or processing
-INSERT INTO commands (player_id, army_id, game_turn_id, command_type, command_data, status) VALUES
-(@player1_id, @defense_force_id, 5, 'move', '{"target_x": 0, "target_y": -3}', 'pending'),
-(@player1_id, @first_army_id, 5, 'attack', '{"target_army_id": 3}', 'pending'),
-(@player2_id, @border_patrol_id, 5, 'create_unit', '{"unit_class_id": 2, "name": "New Archer"}', 'processing'),
-(@player2_id, @invasion_force_id, 5, 'move', '{"target_x": 3, "target_y": 2}', 'pending');
-
 -- Insert sample armies
 INSERT INTO army (name, realm_id, x_coord, y_coord) VALUES
 ('First Army', @first_realm_id, -1, -1),
@@ -219,5 +234,20 @@ INSERT INTO game_turns (turn_number, start_time, end_time, command_deadline, sta
 (5, CURDATE() + INTERVAL 0 HOUR,
      DATE_ADD(CURDATE(), INTERVAL 1 DAY) + INTERVAL 0 HOUR,
      CURDATE() + INTERVAL 20 HOUR, 'active');
+
+-- Insert sample commands for testing
+-- Commands for completed turn 1 can only be completed or failed
+INSERT INTO commands (player_id, army_id, game_turn_id, command_type, command_data, status) VALUES
+(@player1_id, @first_army_id, 1, 'move', '{"target_x": 10, "target_y": 15}', 'completed'),
+(@player1_id, @first_army_id, 1, 'attack', '{"target_x": 2, "target_y": 0}', 'failed'),
+(@player2_id, @invasion_force_id, 1, 'create_unit', '{"unit_class_id": 1, "name": "New Warrior"}', 'completed'),
+(@player2_id, @invasion_force_id, 1, 'move', '{"target_x": -5, "target_y": 8}', 'failed');
+
+-- Commands for current active turn 5 can be pending or processing
+INSERT INTO commands (player_id, army_id, game_turn_id, command_type, command_data, status) VALUES
+(@player1_id, @defense_force_id, 5, 'move', '{"target_x": 0, "target_y": -3}', 'pending'),
+(@player1_id, @first_army_id, 5, 'attack', '{"target_army_id": 3}', 'pending'),
+(@player2_id, @border_patrol_id, 5, 'create_unit', '{"unit_class_id": 2, "name": "New Archer"}', 'processing'),
+(@player2_id, @invasion_force_id, 5, 'move', '{"target_x": 3, "target_y": 2}', 'pending');
 
 -- You can add more sample data here as needed 
