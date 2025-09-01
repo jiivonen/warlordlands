@@ -118,13 +118,13 @@ INSERT INTO map (x_coord, y_coord, terrain_type, realm_id) VALUES
 (-15, 9, 'mountains', @second_realm_id), (-14, 9, 'mountains', @second_realm_id), (-13, 9, 'mountains', @second_realm_id), (-12, 9, 'mountains', @second_realm_id), (-11, 9, 'mountains', @second_realm_id), (-10, 9, 'mountains', @second_realm_id), (-9, 9, 'mountains', @second_realm_id), (-8, 9, 'mountains', @second_realm_id), (-7, 9, 'mountains', @second_realm_id), (-6, 9, 'mountains', @second_realm_id), (-5, 9, 'mountains', @second_realm_id), (-4, 9, 'mountains', @second_realm_id), (-3, 9, 'mountains', @second_realm_id), (-2, 9, 'mountains', @second_realm_id), (-1, 9, 'mountains', @second_realm_id), (0, 9, 'mountains', @second_realm_id), (1, 9, 'mountains', @second_realm_id), (2, 9, 'mountains', @second_realm_id), (3, 9, 'mountains', @second_realm_id), (4, 9, 'mountains', @second_realm_id), (5, 9, 'mountains', @second_realm_id), (6, 9, 'mountains', @second_realm_id), (7, 9, 'mountains', @second_realm_id), (8, 9, 'mountains', @second_realm_id), (9, 9, 'mountains', @second_realm_id), (10, 9, 'mountains', @second_realm_id), (11, 9, 'mountains', @second_realm_id), (12, 9, 'mountains', @second_realm_id), (13, 9, 'mountains', @second_realm_id), (14, 9, 'mountains', @second_realm_id);
 
 -- Insert sample unit classes
-INSERT INTO unit_classes (name, description, unit_type, melee_combat, ranged_combat, defence, attack_range, hitpoints) VALUES
-('Swordsman', 'Basic infantry unit with sword and shield', 'infantry', 3, 0, 2, 1, 10),
-('Archer', 'Ranged infantry unit with bow', 'infantry', 1, 4, 1, 6, 8),
-('Knight', 'Heavy cavalry with lance and armor', 'cavalry', 5, 0, 4, 1, 15),
-('Dragon', 'Flying monster with devastating attacks', 'monster', 8, 6, 3, 3, 25),
-('Hero', 'Legendary warrior with exceptional abilities', 'hero', 7, 3, 5, 2, 20),
-('Ballista', 'Siege weapon for long-range attacks', 'warmachine', 1, 8, 2, 12, 12);
+INSERT INTO unit_classes (name, description, unit_type, melee_combat, ranged_combat, defence, attack_range, hitpoints, strategic_speed) VALUES
+('Swordsman', 'Basic infantry unit with sword and shield', 'infantry', 3, 0, 2, 1, 10, 1),
+('Archer', 'Ranged infantry unit with bow', 'infantry', 1, 4, 1, 6, 8, 1),
+('Knight', 'Heavy cavalry with lance and armor', 'cavalry', 5, 0, 4, 1, 15, 2),
+('Dragon', 'Flying monster with devastating attacks', 'monster', 8, 6, 3, 3, 25, 4),
+('Hero', 'Legendary warrior with exceptional abilities', 'hero', 7, 3, 5, 2, 20, 1),
+('Ballista', 'Siege weapon for long-range attacks', 'warmachine', 1, 8, 2, 12, 12, 1);
 
 -- Link unit classes to keywords
 INSERT INTO unit_classes_keywords (unit_class_id, keyword) VALUES

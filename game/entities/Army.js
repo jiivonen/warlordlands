@@ -316,6 +316,27 @@ class Army {
     }
 
     /**
+     * Get army strategic speed (lowest speed of all units in the army)
+     */
+    async getStrategicSpeed(dbPool) {
+        try {
+            const [rows] = await dbPool.execute(
+                `SELECT MIN(uc.strategic_speed) as min_speed
+                 FROM unit u 
+                 JOIN unit_classes uc ON u.unit_class_id = uc.id 
+                 WHERE u.army_id = ?`,
+                [this.id]
+            );
+            
+            // If army has no units, return default speed of 1
+            return rows[0].min_speed || 1;
+        } catch (error) {
+            console.error('Error getting army strategic speed:', error);
+            throw error;
+        }
+    }
+
+    /**
      * Get nearby armies (within specified range)
      */
     async getNearbyArmies(dbPool, range = 3) {

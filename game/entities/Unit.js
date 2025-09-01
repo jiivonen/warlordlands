@@ -22,7 +22,7 @@ class Unit {
         try {
             const [rows] = await dbPool.execute(
                 `SELECT u.*, uc.name as unit_class_name, uc.melee_combat, uc.ranged_combat, 
-                        uc.defence, uc.attack_range, uc.hitpoints, uc.unit_type,
+                        uc.defence, uc.attack_range, uc.hitpoints, uc.unit_type, uc.strategic_speed,
                         a.name as army_name, r.name as realm_name, r.player_id
                  FROM unit u 
                  LEFT JOIN unit_classes uc ON u.unit_class_id = uc.id
@@ -44,7 +44,8 @@ class Unit {
                 defence: rows[0].defence,
                 attack_range: rows[0].attack_range,
                 hitpoints: rows[0].hitpoints,
-                unit_type: rows[0].unit_type
+                unit_type: rows[0].unit_type,
+                strategic_speed: rows[0].strategic_speed
             };
             unit.army = { name: rows[0].army_name };
             unit.realm = { 
@@ -122,7 +123,7 @@ class Unit {
         try {
             const [rows] = await dbPool.execute(
                 `SELECT u.*, uc.name as unit_class_name, uc.melee_combat, uc.ranged_combat, 
-                        uc.defence, uc.attack_range, uc.hitpoints
+                        uc.defence, uc.attack_range, uc.hitpoints, uc.strategic_speed
                  FROM unit u 
                  JOIN unit_classes uc ON u.unit_class_id = uc.id
                  WHERE u.army_id = ? 
@@ -138,7 +139,8 @@ class Unit {
                     ranged_combat: row.ranged_combat,
                     defence: row.defence,
                     attack_range: row.attack_range,
-                    hitpoints: row.hitpoints
+                    hitpoints: row.hitpoints,
+                    strategic_speed: row.strategic_speed
                 };
                 return unit;
             });
