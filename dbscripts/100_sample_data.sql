@@ -47,7 +47,7 @@ INSERT INTO player (nick, fullname, email, password_hash) VALUES
 SET @player1_id = LAST_INSERT_ID();
 
 -- Insert second player
--- Password: player456 (bcrypt hash with salt rounds 10)
+-- Password: player123 (bcrypt hash with salt rounds 10)
 INSERT INTO player (nick, fullname, email, password_hash) VALUES 
 ('player2', 'Player Two', 'player2@example.com.invalid', '$2b$10$IhxK9b.1XbtI0ABFlTMOAOpFR/e2U.LlfmwicJBYHK.8tnbaVUqh2');
 
