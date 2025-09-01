@@ -151,6 +151,7 @@ INSERT INTO commands (player_id, army_id, game_turn_id, command_type, command_da
 INSERT INTO army (name, realm_id, x_coord, y_coord) VALUES
 ('First Army', @first_realm_id, -1, -1),
 ('Defense Force', @first_realm_id, 0, -2),
+('Cavalry Strike Force', @first_realm_id, -2, -3),
 ('Invasion Force', @second_realm_id, 1, 1),
 ('Border Patrol', @second_realm_id, 2, 0);
 
@@ -166,6 +167,7 @@ SET @ballista_id = (SELECT id FROM unit_classes WHERE name = 'Ballista' LIMIT 1)
 -- Get army IDs for reference
 SET @first_army_id = (SELECT id FROM army WHERE name = 'First Army' LIMIT 1);
 SET @defense_force_id = (SELECT id FROM army WHERE name = 'Defense Force' LIMIT 1);
+SET @cavalry_strike_force_id = (SELECT id FROM army WHERE name = 'Cavalry Strike Force' LIMIT 1);
 SET @invasion_force_id = (SELECT id FROM army WHERE name = 'Invasion Force' LIMIT 1);
 SET @border_patrol_id = (SELECT id FROM army WHERE name = 'Border Patrol' LIMIT 1);
 
@@ -181,6 +183,12 @@ INSERT INTO unit (name, realm_id, unit_class_id, army_id, current_hitpoints) VAL
 ('Archer Echo', @first_realm_id, @archer_id, @defense_force_id, 8),
 ('Ballista Foxtrot', @first_realm_id, @ballista_id, @defense_force_id, 12),
 ('Hero Gamma', @first_realm_id, @hero_id, @defense_force_id, 18);
+
+-- Insert units for Cavalry Strike Force (all cavalry for high strategic speed)
+INSERT INTO unit (name, realm_id, unit_class_id, army_id, current_hitpoints) VALUES
+('Knight Alpha', @first_realm_id, @knight_id, @cavalry_strike_force_id, 15),
+('Knight Beta', @first_realm_id, @knight_id, @cavalry_strike_force_id, 14),
+('Knight Gamma', @first_realm_id, @knight_id, @cavalry_strike_force_id, 13);
 
 -- Insert units for Invasion Force
 INSERT INTO unit (name, realm_id, unit_class_id, army_id, current_hitpoints) VALUES
