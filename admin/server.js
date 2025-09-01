@@ -141,7 +141,8 @@ app.get('/admin', requireAuth, async (req, res) => {
             { name: 'map', displayName: 'Map Tiles' },
             { name: 'army', displayName: 'Armies' },
             { name: 'unit', displayName: 'Units' },
-            { name: 'game_turns', displayName: 'Game Turns' }
+            { name: 'game_turns', displayName: 'Game Turns' },
+            { name: 'commands', displayName: 'Commands' }
         ];
         
         res.render('admin', { 
@@ -392,6 +393,56 @@ app.post('/admin/game_turns/delete/:id', requireAuth, async (req, res) => {
     }
 });
 
+// Commands management routes
+app.get('/admin/commands', requireAuth, async (req, res) => {
+    try {
+        const [rows] = await pool.execute(`
+            SELECT c.*, 
+                   p.nick as player_nick,
+                   a.name as army_name,
+                   gt.turn_number,
+                   CONCAT(gt.turn_number, ' (', DATE_FORMAT(gt.start_time, '%Y-%m-%d %H:%i'), ')') as turn_display
+            FROM commands c
+            LEFT JOIN player p ON c.player_id = p.id
+            LEFT JOIN army a ON c.army_id = a.id
+            LEFT JOIN game_turns gt ON c.game_turn_id = gt.id
+            ORDER BY c.created_at DESC
+        `);
+        
+        res.render('commands', {
+            commands: rows,
+            userNick: req.session.userNick,
+            title: 'Commands Management'
+        });
+    } catch (error) {
+        console.error('Error loading commands:', error);
+        res.status(500).send('Error loading commands');
+    }
+});
+
+// Update command status route
+app.post('/admin/commands/update/:id', requireAuth, async (req, res) => {
+    const { id } = req.params;
+    const { status, result } = req.body;
+    
+    try {
+        const updateData = { status };
+        if (result !== undefined) {
+            updateData.result = result;
+        }
+        
+        await pool.execute(
+            'UPDATE commands SET status = ?, result = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?',
+            [status, result || null, id]
+        );
+        
+        res.json({ success: true });
+    } catch (error) {
+        console.error('Error updating command:', error);
+        res.status(500).json({ success: false, error: 'Error updating command' });
+    }
+});
+
 // Generic table listing route
 app.get('/admin/:table', requireAuth, async (req, res) => {
     const tableName = req.params.table;
@@ -523,7 +574,8 @@ function getDisplayName(tableName) {
         'map': 'Map Tiles',
         'army': 'Armies',
         'unit': 'Units',
-        'game_turns': 'Game Turns'
+        'game_turns': 'Game Turns',
+        'commands': 'Commands'
     };
     return displayNames[tableName] || tableName;
 }
