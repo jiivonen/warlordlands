@@ -166,23 +166,41 @@ function createMapTile(x, y) {
         terrainIcon.textContent = getTerrainIcon(tileData.terrain_type);
         tile.appendChild(terrainIcon);
         
-        // Check for armies
-        const playerArmy = mapData.playerArmies.find(a => a.x_coord === x && a.y_coord === y);
-        const enemyArmy = mapData.enemyArmies.find(a => a.x_coord === x && a.y_coord === y);
+        // Check for armies - show ALL armies at this location
+        const playerArmies = mapData.playerArmies.filter(a => a.x_coord === x && a.y_coord === y);
+        const enemyArmies = mapData.enemyArmies.filter(a => a.x_coord === x && a.y_coord === y);
         
-        if (playerArmy) {
+        // Show player armies first
+        playerArmies.forEach((army, index) => {
             const armyIndicator = document.createElement('div');
             armyIndicator.className = 'army-indicator player-army';
             armyIndicator.textContent = '⚔️';
-            armyIndicator.title = `Your Army: ${playerArmy.name}`;
+            armyIndicator.title = `Your Army: ${army.name}`;
+            // Stack multiple armies with slight offset
+            if (index > 0) {
+                armyIndicator.style.position = 'relative';
+                armyIndicator.style.left = `${index * 8}px`;
+                armyIndicator.style.top = `${index * 8}px`;
+            }
             tile.appendChild(armyIndicator);
-        } else if (enemyArmy) {
+        });
+        
+        // Show enemy armies (always visible, regardless of player armies)
+        enemyArmies.forEach((army, index) => {
             const armyIndicator = document.createElement('div');
             armyIndicator.className = 'army-indicator enemy-army';
             armyIndicator.textContent = '⚔️';
-            armyIndicator.title = `Enemy Army: ${enemyArmy.name} (${enemyArmy.realm_name})`;
+            armyIndicator.title = `Enemy Army: ${army.name} (${army.realm_name})`;
+            // Stack multiple armies with slight offset
+            // For enemy armies, start offset after player armies
+            const totalOffset = playerArmies.length + index;
+            if (totalOffset > 0) {
+                armyIndicator.style.position = 'relative';
+                armyIndicator.style.left = `${totalOffset * 8}px`;
+                armyIndicator.style.top = `${totalOffset * 8}px`;
+            }
             tile.appendChild(armyIndicator);
-        }
+        });
     } else {
         tile.classList.add('terrain-unknown');
         tile.title = `Unknown Territory (${x}, ${y})`;
@@ -245,43 +263,70 @@ function showTileInfo(x, y, tileData) {
             </div>
         `;
         
-        // Check for armies
-        const playerArmy = mapData.playerArmies.find(a => a.x_coord === x && a.y_coord === y);
-        const enemyArmy = mapData.enemyArmies.find(a => a.x_coord === x && a.y_coord === y);
+        // Check for armies - show ALL armies at this location
+        const playerArmies = mapData.playerArmies.filter(a => a.x_coord === x && a.y_coord === y);
+        const enemyArmies = mapData.enemyArmies.filter(a => a.x_coord === x && a.y_coord === y);
         
-        if (playerArmy) {
+        // Show player armies first
+        if (playerArmies.length > 0) {
             tileDetails.innerHTML += `
                 <div class="tile-detail">
-                    <strong>Your Army:</strong> <span>${playerArmy.name}</span>
-                    <br>
-                    <strong>Strategic Speed:</strong> <span>${playerArmy.strategic_speed || 1}</span>
+                    <strong>Your Armies (${playerArmies.length}):</strong>
                 </div>
             `;
             
-            // Add move button if army doesn't have a command
-            checkArmyCommandStatus(playerArmy.id).then(hasCommand => {
-                if (!hasCommand) {
-                    tileDetails.innerHTML += `
-                        <div class="tile-detail">
-                            <button class="btn btn-sm btn-primary" onclick="startMove(${playerArmy.id}, ${x}, ${y}, ${playerArmy.strategic_speed || 1})">
-                                Move Army
+            playerArmies.forEach((army, index) => {
+                tileDetails.innerHTML += `
+                    <div class="tile-detail" style="margin-left: 20px; border-left: 2px solid #007bff; padding-left: 10px;">
+                        <strong>${army.name}</strong>
+                        <br>
+                        <strong>Strategic Speed:</strong> <span>${army.strategic_speed || 1}</span>
+                        <br>
+                        <div style="margin-top: 8px;">
+                `;
+                
+                // Check command status for this specific army and add appropriate button/badge
+                checkArmyCommandStatus(army.id).then(hasCommand => {
+                    if (!hasCommand) {
+                        tileDetails.innerHTML += `
+                            <button class="btn btn-sm btn-primary" onclick="startMove(${army.id}, ${x}, ${y}, ${army.strategic_speed || 1})">
+                                Move ${army.name}
                             </button>
-                        </div>
-                    `;
-                } else {
-                    tileDetails.innerHTML += `
-                        <div class="tile-detail">
+                        `;
+                    } else {
+                        tileDetails.innerHTML += `
                             <span class="badge bg-warning">Has Command</span>
+                        `;
+                    }
+                    
+                    // Close the army detail div
+                    tileDetails.innerHTML += `
                         </div>
+                    </div>
                     `;
-                }
+                });
             });
-        } else if (enemyArmy) {
+        }
+        
+        // Show enemy armies
+        if (enemyArmies.length > 0) {
             tileDetails.innerHTML += `
                 <div class="tile-detail">
-                    <strong>Enemy Army:</strong> <span>${enemyArmy.name} (${enemyArmy.realm_name})</span>
+                    <strong>Enemy Armies (${enemyArmies.length}):</strong>
                 </div>
             `;
+            
+            enemyArmies.forEach((army, index) => {
+                tileDetails.innerHTML += `
+                    <div class="tile-detail" style="margin-left: 20px; border-left: 2px solid #dc3545; padding-left: 10px;">
+                        <strong>${army.name}</strong>
+                        <br>
+                        <strong>Realm:</strong> <span>${army.realm_name}</span>
+                        <br>
+                        <strong>Player:</strong> <span>${army.player_nick}</span>
+                    </div>
+                `;
+            });
         }
         
         tileInfo.style.display = 'block';
