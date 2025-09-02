@@ -11,7 +11,7 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Joonas Iivonen",
-  "license": "ISC",
+  "license": "https://creativecommons.org/licenses/by-nc-sa/4.0/",
   "dependencies": {
     "bcrypt": "^5.1.1",
     "body-parser": "^1.20.2",

@@ -2,6 +2,10 @@
 
 A Node.js/Express web service for managing the Warlordlands game database.
 
+CC BY-NC-SA 4.0
+
+https://creativecommons.org/licenses/by-nc-sa/4.0/
+
 ## Prerequisites
 
 - Node.js (v14 or higher)
