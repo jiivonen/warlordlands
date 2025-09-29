@@ -1,11 +1,18 @@
-const express = require('express');
-const mysql = require('mysql2/promise');
-const session = require('express-session');
-const bcrypt = require('bcrypt');
-const bodyParser = require('body-parser');
-const path = require('path');
-const expressLayouts = require('express-ejs-layouts');
-require('dotenv').config();
+import express from 'express';
+import mysql from 'mysql2/promise';
+import session from 'express-session';
+import bcrypt from 'bcrypt';
+import bodyParser from 'body-parser';
+import path from 'path';
+import { fileURLToPath } from 'url';
+import expressLayouts from 'express-ejs-layouts';
+import dotenv from 'dotenv';
+
+dotenv.config();
+
+// ES module equivalent of __dirname
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 
 const app = express();
@@ -375,7 +382,7 @@ app.post('/admin/game_turns/add', requireAuth, async (req, res) => {
                 console.log(`Processing commands for turn ${currentTurn.turn_number} before creating new turn...`);
                 
                 // Process pending commands for the current turn
-                const GameTurnManager = require('../game/systems/GameTurnManager');
+                const GameTurnManager = (await import('../game/systems/GameTurnManager.js')).default;
                 const gameTurnManager = new GameTurnManager(connection);
                 commandResults = await gameTurnManager.processPendingCommands(currentTurn.id);
                 

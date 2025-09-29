@@ -1,4 +1,4 @@
-const CombatEngine = require('./CombatEngine');
+import CombatEngine from './CombatEngine.js';
 
 class GameTurnManager {
     constructor(dbPool) {
@@ -451,4 +451,4 @@ class GameTurnManager {
     }
 }
 
-module.exports = GameTurnManager;
+export default GameTurnManager;

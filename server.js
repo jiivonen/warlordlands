@@ -1,12 +1,19 @@
-const express = require('express');
-const mysql = require('mysql2/promise');
-const session = require('express-session');
-const bcrypt = require('bcrypt');
-const bodyParser = require('body-parser');
-const path = require('path');
-const expressLayouts = require('express-ejs-layouts');
-const TurnScheduler = require('./game/systems/TurnScheduler');
-require('dotenv').config();
+import express from 'express';
+import mysql from 'mysql2/promise';
+import session from 'express-session';
+import bcrypt from 'bcrypt';
+import bodyParser from 'body-parser';
+import path from 'path';
+import { fileURLToPath } from 'url';
+import expressLayouts from 'express-ejs-layouts';
+import TurnScheduler from './game/systems/TurnScheduler.js';
+import dotenv from 'dotenv';
+
+dotenv.config();
+
+// ES module equivalent of __dirname
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const app = express();
 const PORT = process.env.GAME_PORT || 3000; // Different port from admin server
@@ -277,7 +284,7 @@ app.get('/map', requireAuth, (req, res) => {
 // Map API endpoint
 app.get('/api/map/data', requireAuth, async (req, res) => {
     try {
-        const Map = require('./game/world/Map');
+        const Map = (await import('./game/world/Map.js')).default;
         const mapInstance = new Map(pool);
         
         const strategicInfo = await mapInstance.getStrategicMapInfo(req.session.playerId);

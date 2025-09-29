@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "Warlord lands game",
   "main": "warlords.js",
+  "type": "module",
   "scripts": {
     "start_admin": "node admin/server.js",
     "dev_admin": "nodemon admin/server.js",

@@ -134,7 +134,7 @@ class Player {
      */
     async getRealm(dbPool) {
         try {
-            const Realm = require('./Realm');
+            const Realm = (await import('./Realm.js')).default;
             return await Realm.getByPlayerId(dbPool, this.id);
         } catch (error) {
             console.error('Error getting player realms:', error);
@@ -195,4 +195,4 @@ class Player {
     }
 }
 
-module.exports = Player;
+export default Player;

@@ -237,7 +237,7 @@ class Army {
      */
     async getUnits(dbPool) {
         try {
-            const Unit = require('./Unit');
+            const Unit = (await import('./Unit.js')).default;
             return await Unit.getByArmyId(dbPool, this.id);
         } catch (error) {
             console.error('Error getting army units:', error);
@@ -368,4 +368,4 @@ class Army {
     }
 }
 
-module.exports = Army;
+export default Army;

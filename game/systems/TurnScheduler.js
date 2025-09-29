@@ -1,4 +1,4 @@
-const GameTurnManager = require('./GameTurnManager');
+import GameTurnManager from './GameTurnManager.js';
 
 class TurnScheduler {
     constructor(dbPool, checkIntervalMinutes = 15) {
@@ -96,4 +96,4 @@ class TurnScheduler {
     }
 }
 
-module.exports = TurnScheduler;
+export default TurnScheduler;

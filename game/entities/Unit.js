@@ -362,4 +362,4 @@ class Unit {
     }
 }
 
-module.exports = Unit;
+export default Unit;

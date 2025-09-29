@@ -1,5 +1,5 @@
-const Army = require('../entities/Army');
-const Unit = require('../entities/Unit');
+import Army from '../entities/Army.js';
+import Unit from '../entities/Unit.js';
 
 class CombatEngine {
     constructor(dbPool) {
@@ -48,4 +48,4 @@ class CombatEngine {
     }
 }
 
-module.exports = CombatEngine;
+export default CombatEngine;

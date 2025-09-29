@@ -309,4 +309,4 @@ class GameTurn {
     }
 }
 
-module.exports = GameTurn;
+export default GameTurn;

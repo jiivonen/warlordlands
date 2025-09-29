@@ -155,7 +155,7 @@ class Realm {
      */
     async getArmies(dbPool) {
         try {
-            const Army = require('./Army');
+            const Army = (await import('./Army.js')).default;
             return await Army.getByRealmId(dbPool, this.id);
         } catch (error) {
             console.error('Error getting realm armies:', error);
@@ -168,7 +168,7 @@ class Realm {
      */
     async getUnits(dbPool) {
         try {
-            const Unit = require('./Unit');
+            const Unit = (await import('./Unit.js')).default;
             return await Unit.getByRealmId(dbPool, this.id);
         } catch (error) {
             console.error('Error getting realm units:', error);
@@ -219,4 +219,4 @@ class Realm {
     }
 }
 
-module.exports = Realm;
+export default Realm;
