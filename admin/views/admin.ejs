@@ -1,12 +1,59 @@
-<h2>Admin Dashboard</h2>
-<p>Welcome to the Warlordlands administration panel. Select a table to manage its content.</p>
+<h2>Game Admin</h2>
 
 <div class="grid">
-    <% tables.forEach(function(table) { %>
-        <div class="card">
-            <h3><%= table.displayName %></h3>
-            <p>Manage <%= table.displayName.toLowerCase() %> data</p>
-            <a href="/admin/<%= table.name %>" class="btn btn-primary">View & Edit</a>
-        </div>
-    <% }); %>
+    <div class="card">
+        <h3>Admin Users</h3>
+        <a href="/admin/users" class="btn btn-primary">View & Edit</a>
+    </div>
+    <div class="card">
+        <h3>Players</h3>
+        <a href="/admin/player" class="btn btn-primary">View & Edit</a>
+    </div>
+    <div class="card">
+        <h3>Realms</h3>
+        <a href="/admin/realm" class="btn btn-primary">View & Edit</a>
+    </div>
+    <div class="card">
+        <h3>Armies</h3>
+        <a href="/admin/army" class="btn btn-primary">View & Edit</a>
+    </div>
+    <div class="card">
+        <h3>Units</h3>
+        <a href="/admin/unit" class="btn btn-primary">View & Edit</a>
+    </div>
+    <div class="card">
+        <h3>Game Turns</h3>
+        <a href="/admin/game_turns" class="btn btn-primary">View & Edit</a>
+    </div>
+    <div class="card">
+        <h3>Commands</h3>
+        <a href="/admin/commands" class="btn btn-primary">View & Edit</a>
+    </div>
+</div>
+
+<div class="divider"></div>
+
+<h2>Meta information</h2>
+
+<div class="grid">
+    <div class="card">
+        <h3>Unit Types</h3>
+        <a href="/admin/unit_type" class="btn btn-primary">View & Edit</a>
+    </div>
+    <div class="card">
+        <h3>Unit Classes</h3>
+        <a href="/admin/unit_classes" class="btn btn-primary">View & Edit</a>
+    </div>
+    <div class="card">
+        <h3>Keywords</h3>
+        <a href="/admin/keywords" class="btn btn-primary">View & Edit</a>
+    </div>
+    <div class="card">
+        <h3>Terrain Types</h3>
+        <a href="/admin/terrain_types" class="btn btn-primary">View & Edit</a>
+    </div>
+    <div class="card">
+        <h3>Map Tiles</h3>
+        <a href="/admin/map" class="btn btn-primary">View & Edit</a>
+    </div>
 </div>
