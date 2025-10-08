@@ -1,11 +1,11 @@
 <div class="form-container">
     <h2>Edit <%= displayName %></h2>
 
-    <form method="POST" action="/admin/<%= tableName %>/edit/<%= record.id %>">
+    <form method="POST" action="/admin/<%= tableName %>/edit/<%= record[primaryKey] %>">
     <% columns.forEach(function(column) { %>
         <div class="form-group">
             <label for="<%= column %>"><%= column %>:</label>
-            <% if (column === 'id') { %>
+            <% if (column === primaryKey) { %>
                 <input type="text" id="<%= column %>" name="<%= column %>" value="<%= record[column] %>" class="form-control" readonly>
             <% } else if (typeof record[column] === 'boolean') { %>
                 <select id="<%= column %>" name="<%= column %>" class="form-control">
@@ -15,7 +15,7 @@
             <% } else if (column.includes('created_at') || column.includes('updated_at')) { %>
                 <input type="text" id="<%= column %>" name="<%= column %>" value="<%= record[column] %>" class="form-control" readonly>
             <% } else { %>
-                <input type="text" id="<%= column %>" name="<%= column %>" value="<%= record[column] || '' %>" class="form-control">
+                <input type="text" id="<%= column %>" name="<%= column %>" value="<%= record[column] !== null && record[column] !== undefined ? record[column] : '' %>" class="form-control">
             <% } %>
         </div>
     <% }); %>

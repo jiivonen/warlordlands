@@ -490,6 +490,7 @@ app.post('/admin/commands/update/:id', requireAuth, async (req, res) => {
 // Generic table listing route
 app.get('/admin/:table', requireAuth, async (req, res) => {
     const tableName = req.params.table;
+    const primaryKey = getPrimaryKey(tableName);
     
     try {
         const [rows] = await pool.execute(`SELECT * FROM ${tableName}`);
@@ -500,6 +501,7 @@ app.get('/admin/:table', requireAuth, async (req, res) => {
             displayName: getDisplayName(tableName),
             data: rows,
             columns: columns.map(col => col.Field),
+            primaryKey: primaryKey,
             userNick: req.session.userNick
         });
     } catch (error) {
@@ -511,9 +513,10 @@ app.get('/admin/:table', requireAuth, async (req, res) => {
 // Generic table editing route
 app.get('/admin/:table/edit/:id', requireAuth, async (req, res) => {
     const { table, id } = req.params;
+    const primaryKey = getPrimaryKey(table);
     
     try {
-        const [rows] = await pool.execute(`SELECT * FROM ${table} WHERE id = ?`, [id]);
+        const [rows] = await pool.execute(`SELECT * FROM ${table} WHERE ${primaryKey} = ?`, [id]);
         const [columns] = await pool.execute(`DESCRIBE ${table}`);
         
         if (rows.length === 0) {
@@ -525,6 +528,7 @@ app.get('/admin/:table/edit/:id', requireAuth, async (req, res) => {
             displayName: getDisplayName(table),
             record: rows[0],
             columns: columns.map(col => col.Field),
+            primaryKey: primaryKey,
             userNick: req.session.userNick
         });
     } catch (error) {
@@ -536,14 +540,15 @@ app.get('/admin/:table/edit/:id', requireAuth, async (req, res) => {
 // Update record route
 app.post('/admin/:table/edit/:id', requireAuth, async (req, res) => {
     const { table, id } = req.params;
+    const primaryKey = getPrimaryKey(table);
     const updateData = req.body;
     
     try {
-        const fields = Object.keys(updateData).filter(key => key !== 'id');
+        const fields = Object.keys(updateData).filter(key => key !== primaryKey);
         const values = fields.map(field => updateData[field]);
         values.push(id);
         
-        const query = `UPDATE ${table} SET ${fields.map(field => `${field} = ?`).join(', ')} WHERE id = ?`;
+        const query = `UPDATE ${table} SET ${fields.map(field => `${field} = ?`).join(', ')} WHERE ${primaryKey} = ?`;
         await pool.execute(query, values);
         
         res.redirect(`/admin/${table}`);
@@ -556,6 +561,7 @@ app.post('/admin/:table/edit/:id', requireAuth, async (req, res) => {
 // Add new record route
 app.get('/admin/:table/add', requireAuth, async (req, res) => {
     const tableName = req.params.table;
+    const primaryKey = getPrimaryKey(tableName);
     
     try {
         const [columns] = await pool.execute(`DESCRIBE ${tableName}`);
@@ -564,6 +570,7 @@ app.get('/admin/:table/add', requireAuth, async (req, res) => {
             tableName,
             displayName: getDisplayName(tableName),
             columns: columns.map(col => col.Field),
+            primaryKey: primaryKey,
             userNick: req.session.userNick
         });
     } catch (error) {
@@ -593,9 +600,10 @@ app.post('/admin/:table/add', requireAuth, async (req, res) => {
 // Delete record route
 app.post('/admin/:table/delete/:id', requireAuth, async (req, res) => {
     const { table, id } = req.params;
+    const primaryKey = getPrimaryKey(table);
     
     try {
-        await pool.execute(`DELETE FROM ${table} WHERE id = ?`, [id]);
+        await pool.execute(`DELETE FROM ${table} WHERE ${primaryKey} = ?`, [id]);
         res.redirect(`/admin/${table}`);
     } catch (error) {
         console.error(`Error deleting record:`, error);
@@ -622,6 +630,16 @@ function getDisplayName(tableName) {
         'commands': 'Commands'
     };
     return displayNames[tableName] || tableName;
+}
+
+// Helper function to get primary key for each table
+function getPrimaryKey(tableName) {
+    const primaryKeys = {
+        'unit_type': 'type',
+        'terrain_types': 'type',
+        'keywords': 'keyword'
+    };
+    return primaryKeys[tableName] || 'id';
 }
 
 // Start server

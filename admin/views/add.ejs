@@ -3,7 +3,7 @@
 
     <form method="POST" action="/admin/<%= tableName %>/add">
     <% columns.forEach(function(column) { %>
-        <% if (column !== 'id' && !column.includes('created_at') && !column.includes('updated_at')) { %>
+        <% if (column !== primaryKey && !column.includes('created_at') && !column.includes('updated_at')) { %>
             <div class="form-group">
                 <label for="<%= column %>"><%= column %>:</label>
                 <input type="text" id="<%= column %>" name="<%= column %>" class="form-control" required>
