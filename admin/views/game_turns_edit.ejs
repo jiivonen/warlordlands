@@ -1,5 +1,3 @@
-
-
 <div class="container mt-4">
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h1>✏️ Edit Game Turn</h1>
@@ -62,7 +60,7 @@
                                     value="<%= typeof formData !== 'undefined' ? formData.end_time : new Date(turn.end_time).toLocaleString('sv-SE').slice(0, 16) %>" 
                                     required>
                             <div class="form-text">Must be in the future</div>
-                            <div id="end_time_validation" class="form-text text-danger" style="display: none;"></div>
+                            <div id="end_time_validation" class="form-text text-danger validation-error"></div>
                         </div>
                     </div>
                     <div class="col-md-6">
@@ -75,20 +73,20 @@
                                     value="<%= typeof formData !== 'undefined' ? formData.command_deadline : new Date(turn.command_deadline).toLocaleString('sv-SE').slice(0, 16) %>" 
                                     required>
                             <div class="form-text">Must be in the future and before end time</div>
-                            <div id="command_deadline_validation" class="form-text text-danger" style="display: none;"></div>
+                            <div id="command_deadline_validation" class="form-text text-danger validation-error"></div>
                         </div>
                     </div>
                 </div>
 
-                                 <% if (typeof validationError !== 'undefined' && validationError) { %>
-                     <div class="alert alert-danger">
-                         <strong>❌ Validation Error:</strong> <%= validationError %>
-                     </div>
-                 <% } %>
+                <% if (typeof validationError !== 'undefined' && validationError) { %>
+                    <div class="alert alert-danger">
+                        <strong>❌ Validation Error:</strong> <%= validationError %>
+                    </div>
+                <% } %>
                  
-                 <div class="alert alert-info">
-                     <strong>💡 Tip:</strong> Only end time and command deadline can be edited. Both must be in the future, and command deadline must be before end time. Turn number, status, and start time are read-only.
-                 </div>
+                <div class="alert alert-info">
+                    <strong>💡 Tip:</strong> Only end time and command deadline can be edited. Both must be in the future, and command deadline must be before end time. Turn number, status, and start time are read-only.
+                </div>
 
                 <div class="d-flex gap-2">
                     <button type="submit" class="btn btn-primary">
@@ -254,21 +252,3 @@ document.addEventListener('DOMContentLoaded', function() {
     validateCommandDeadline();
 });
 </script>
-
-<style>
-.form-label {
-    font-weight: 600;
-    color: #495057;
-}
-
-.form-control:focus, .form-select:focus {
-    border-color: #0d6efd;
-    box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
-}
-
-.alert-info {
-    background-color: rgba(13, 202, 240, 0.1);
-    border-color: rgba(13, 202, 240, 0.3);
-    color: #055160;
-}
-</style>

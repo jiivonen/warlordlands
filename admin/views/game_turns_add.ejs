@@ -1,5 +1,3 @@
-
-
 <div class="container mt-4">
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h1>➕ Add New Game Turn</h1>
@@ -65,7 +63,7 @@
                                    value="<%= defaultEndTime %>" 
                                    required>
                             <div class="form-text">Must be in the future (default: 24h from now)</div>
-                            <div id="end_time_validation" class="form-text text-danger" style="display: none;"></div>
+                            <div id="end_time_validation" class="form-text text-danger validation-error"></div>
                         </div>
                     </div>
                     <div class="col-md-6">
@@ -78,7 +76,7 @@
                                    value="<%= defaultCommandDeadline %>" 
                                    required>
                             <div class="form-text">Must be in the future and before end time (default: 20h from now)</div>
-                            <div id="command_deadline_validation" class="form-text text-danger" style="display: none;"></div>
+                            <div id="command_deadline_validation" class="form-text text-danger validation-error"></div>
                         </div>
                     </div>
                 </div>
@@ -264,27 +262,3 @@ document.addEventListener('DOMContentLoaded', function() {
     validateCommandDeadline();
 });
 </script>
-
-<style>
-.form-label {
-    font-weight: 600;
-    color: #495057;
-}
-
-.form-control:focus, .form-select:focus {
-    border-color: #198754;
-    box-shadow: 0 0 0 0.2rem rgba(25, 135, 84, 0.25);
-}
-
-.alert-info {
-    background-color: rgba(13, 202, 240, 0.1);
-    border-color: rgba(13, 202, 240, 0.3);
-    color: #055160;
-}
-
-.form-text {
-    font-size: 0.875rem;
-    color: #6c757d;
-}
-</style>
-

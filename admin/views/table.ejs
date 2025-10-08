@@ -1,4 +1,4 @@
-<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+<div class="table-header">
     <h2><%= displayName %></h2>
     <a href="/admin/<%= tableName %>/add" class="btn btn-success">Add New</a>
 </div>
@@ -6,7 +6,7 @@
 <% if (data.length === 0) { %>
     <p>No records found in this table.</p>
 <% } else { %>
-    <div style="overflow-x: auto;">
+    <div class="table-wrapper">
         <table class="table">
             <thead>
                 <tr>
@@ -32,7 +32,7 @@
                         <% }); %>
                         <td>
                             <a href="/admin/<%= tableName %>/edit/<%= row[primaryKey] %>" class="btn btn-warning btn-sm">Edit</a>
-                            <form method="POST" action="/admin/<%= tableName %>/delete/<%= row[primaryKey] %>" style="display: inline;" onsubmit="return confirm('Are you sure you want to delete this record?')">
+                            <form method="POST" action="/admin/<%= tableName %>/delete/<%= row[primaryKey] %>" class="inline-form" onsubmit="return confirm('Are you sure you want to delete this record?')">
                                 <button type="submit" class="btn btn-danger btn-sm">Delete</button>
                             </form>
                         </td>
