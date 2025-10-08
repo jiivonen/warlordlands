@@ -10,7 +10,7 @@
 
 <% if (armies.length > 0) { %>
 <h3 class="main-title">Active Armies</h3>
-<div class="grid" style="grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));">
+<div class="grid armies-grid">
     <% armies.slice(0, 3).forEach(function(army) { %>
         <div class="card">
             <h4><%= army.name %></h4>

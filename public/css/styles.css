@@ -262,6 +262,146 @@ nav {
     margin-top: 2rem;
 }
 
+/* Home Page Styles */
+.armies-grid {
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+}
+
+/* Map Page Styles */
+.notification-container {
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 1002;
+    display: none;
+}
+
+.notification-message {
+    margin: 0;
+    padding: 15px 25px;
+    border-radius: 8px;
+    font-weight: bold;
+    min-width: 300px;
+    text-align: center;
+}
+
+.tile-info {
+    display: none;
+}
+
+.tile-detail-player {
+    margin-left: 20px;
+    border-left: 2px solid #007bff;
+    padding-left: 10px;
+}
+
+.tile-detail-enemy {
+    margin-left: 20px;
+    border-left: 2px solid #dc3545;
+    padding-left: 10px;
+}
+
+.tile-detail-spacing {
+    margin-top: 8px;
+}
+
+.move-mode-header {
+    margin-bottom: 10px;
+    font-size: 16px;
+    text-align: center;
+}
+
+.move-mode-instructions {
+    font-size: 12px;
+    margin-bottom: 15px;
+    text-align: center;
+}
+
+.path-display {
+    background: rgba(255,255,255,0.2);
+    padding: 8px;
+    border-radius: 4px;
+    margin-bottom: 15px;
+    font-size: 11px;
+    max-height: 150px;
+    overflow-y: auto;
+}
+
+.path-header {
+    margin-bottom: 5px;
+    text-align: center;
+}
+
+.path-buttons {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+}
+
+.commit-move-btn {
+    padding: 8px 20px;
+    background: #27ae60;
+    border: none;
+    color: white;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 12px;
+    font-weight: bold;
+}
+
+.cancel-move-btn {
+    padding: 8px 20px;
+    background: #95a5a6;
+    border: none;
+    color: white;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 12px;
+    font-weight: bold;
+}
+
+.move-mode-footer {
+    font-size: 10px;
+    margin-top: 10px;
+    opacity: 0.8;
+    text-align: center;
+}
+
+.unit-info {
+    margin-bottom: 3px;
+    padding: 2px 6px;
+    background: rgba(52, 152, 219, 0.8);
+    border-radius: 3px;
+    display: inline-block;
+    margin-right: 5px;
+}
+
+.unit-info-spacing {
+    margin-top: 3px;
+}
+
+.unit-info-enemy {
+    margin-bottom: 3px;
+    padding: 2px 6px;
+    background: rgba(155, 89, 182, 0.8);
+    border-radius: 3px;
+    display: inline-block;
+    margin-right: 5px;
+}
+
+/* Authentication Page Styles */
+.auth-description {
+    text-align: center;
+    color: #7f8c8d;
+    margin-bottom: 2rem;
+}
+
+.auth-button {
+    width: 100%;
+    margin-top: 1rem;
+}
+
 /* Responsive Design */
 @media (max-width: 768px) {
     .nav-menu {

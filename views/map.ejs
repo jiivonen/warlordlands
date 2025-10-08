@@ -2,15 +2,15 @@
 
 <div class="map-container">
     <!-- Notification system -->
-    <div id="notificationContainer" style="position: fixed; top: 20px; left: 50%; transform: translateX(-50%); z-index: 1002; display: none;">
-        <div id="notificationMessage" class="alert" style="margin: 0; padding: 15px 25px; border-radius: 8px; font-weight: bold; min-width: 300px; text-align: center;"></div>
+    <div id="notificationContainer" class="notification-container">
+        <div id="notificationMessage" class="alert notification-message"></div>
     </div>
     
     <div class="map-controls">
         <button id="zoomIn" class="btn btn-primary">🔍+</button>
         <button id="zoomOut" class="btn btn-primary">🔍-</button>
         <button id="centerMap" class="btn btn-warning">🎯 Center</button>
-        <div id="tileInfo" class="coordinates-display" style="display: none;">
+        <div id="tileInfo" class="coordinates-display tile-info">
             <div id="tileDetails"></div>
         </div>
     </div>
@@ -274,12 +274,12 @@ function showTileInfo(x, y, tileData) {
             
             playerArmies.forEach((army, index) => {
                 tileDetails.innerHTML += `
-                    <div class="tile-detail" style="margin-left: 20px; border-left: 2px solid #007bff; padding-left: 10px;">
+                    <div class="tile-detail tile-detail-player">
                         <strong>${army.name}</strong>
                         <br>
                         <strong>Strategic Speed:</strong> <span>${army.strategic_speed || 1}</span>
                         <br>
-                        <div style="margin-top: 8px;">
+                        <div class="tile-detail-spacing">
                 `;
                 
                 // Check command status for this specific army and add appropriate button/badge
@@ -315,7 +315,7 @@ function showTileInfo(x, y, tileData) {
             
             enemyArmies.forEach((army, index) => {
                 tileDetails.innerHTML += `
-                    <div class="tile-detail" style="margin-left: 20px; border-left: 2px solid #dc3545; padding-left: 10px;">
+                    <div class="tile-detail tile-detail-enemy">
                         <strong>${army.name}</strong>
                         <br>
                         <strong>Realm:</strong> <span>${army.realm_name}</span>
@@ -361,19 +361,19 @@ function startMove(armyId, startX, startY, speed) {
         moveIndicator.style.cssText = 'position: fixed; top: 20px; right: 20px; background: #e74c3c; color: white; padding: 15px; border-radius: 8px; z-index: 1000; font-weight: bold; min-width: 320px; max-width: 400px;';
         
         moveIndicator.innerHTML = `
-            <div style="margin-bottom: 10px; font-size: 16px; text-align: center;">MOVE MODE ACTIVE</div>
-            <div style="font-size: 12px; margin-bottom: 15px; text-align: center;">
+            <div class="move-mode-header">MOVE MODE ACTIVE</div>
+            <div class="move-mode-instructions">
                 <strong>Army Speed:</strong> ${speed} | <strong>Start:</strong> (${startX}, ${startY})
             </div>
-            <div id="pathDisplay" style="background: rgba(255,255,255,0.2); padding: 8px; border-radius: 4px; margin-bottom: 15px; font-size: 11px; max-height: 150px; overflow-y: auto;">
-                <div style="margin-bottom: 5px; text-align: center;"><strong>Path:</strong></div>
+            <div id="pathDisplay" class="path-display">
+                <div class="path-header"><strong>Path:</strong></div>
                 <div id="pathSteps"></div>
             </div>
-            <div style="display: flex; gap: 10px; justify-content: center;">
-                <button onclick="commitMove()" id="commitMoveBtn" disabled style="padding: 8px 20px; background: #27ae60; border: none; color: white; border-radius: 4px; cursor: pointer; font-size: 12px; font-weight: bold;">Commit Move</button>
-                <button onclick="cancelMove()" style="padding: 8px 20px; background: #95a5a6; border: none; color: white; border-radius: 4px; cursor: pointer; font-size: 12px; font-weight: bold;">Cancel</button>
+            <div class="path-buttons">
+                <button onclick="commitMove()" id="commitMoveBtn" disabled class="commit-move-btn">Commit Move</button>
+                <button onclick="cancelMove()" class="cancel-move-btn">Cancel</button>
             </div>
-            <div style="font-size: 10px; margin-top: 10px; opacity: 0.8; text-align: center;">
+            <div class="move-mode-footer">
                 Click adjacent tiles to build path. First move: 8 directions, then 4 directions only.
             </div>
         `;
@@ -451,7 +451,7 @@ function updatePathDisplay() {
     if (!pathSteps) return;
     
     let html = `
-        <div style="margin-bottom: 3px; padding: 2px 6px; background: rgba(52, 152, 219, 0.8); border-radius: 3px; display: inline-block; margin-right: 5px;">
+        <div class="unit-info">
             Start
         </div>
         <span>(${movePath[0].x}, ${movePath[0].y})</span>
@@ -461,8 +461,8 @@ function updatePathDisplay() {
         const step = movePath[i];
         const stepNumber = i;
         html += `
-            <div style="margin-top: 3px;">
-                <div style="margin-bottom: 3px; padding: 2px 6px; background: rgba(155, 89, 182, 0.8); border-radius: 3px; display: inline-block; margin-right: 5px;">
+            <div class="unit-info-spacing">
+                <div class="unit-info-enemy">
                     Step ${stepNumber}
                 </div>
                 <span>(${step.x}, ${step.y})</span>
