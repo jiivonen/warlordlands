@@ -1,0 +1,20 @@
+<h2 class="page-title">⚔️ Your Armies</h2>
+
+<% if (armies.length > 0) { %>
+<div class="grid armies-grid">
+    <% armies.forEach(function(army) { %>
+        <div class="card">
+            <h4><%= army.name %></h4>
+            <p>📍 Location: (<%= army.x_coord %>, <%= army.y_coord %>)</p>
+            <p>🏰 Realm: <%= army.realm_name %></p>
+            <a href="/armies/<%= army.id %>" class="btn btn-warning">Command Army</a>
+        </div>
+    <% }); %>
+</div>
+<% } else { %>
+<div class="card">
+    <h3>No Armies Yet</h3>
+    <p>You don't have any armies yet. Create a realm and start building your forces!</p>
+    <a href="/map" class="btn btn-primary">Explore the Map</a>
+</div>
+<% } %>

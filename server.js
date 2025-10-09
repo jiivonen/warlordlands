@@ -237,6 +237,19 @@ app.get('/logout', (req, res) => {
 // Home screen
 app.get('/home', requireAuth, async (req, res) => {
     try {
+        res.render('home', {
+            playerName: req.session.playerName,
+            playerNick: req.session.playerNick
+        });
+    } catch (error) {
+        console.error('Home screen error:', error);
+        res.status(500).send('Server error');
+    }
+});
+
+// Armies page
+app.get('/armies', requireAuth, async (req, res) => {
+    try {
         // Get player's armies
         const [armies] = await pool.execute(
             `SELECT a.id, a.name, a.x_coord, a.y_coord, r.name as realm_name 
@@ -247,27 +260,13 @@ app.get('/home', requireAuth, async (req, res) => {
             [req.session.playerId]
         );
         
-        // Get player's units
-        const [units] = await pool.execute(
-            `SELECT u.id, u.name, u.current_hitpoints, uc.name as unit_class_name, 
-                    a.name as army_name, r.name as realm_name
-             FROM unit u 
-             JOIN unit_classes uc ON u.unit_class_id = uc.id
-             JOIN army a ON u.army_id = a.id
-             JOIN realm r ON u.realm_id = r.id
-             WHERE r.player_id = ? 
-             ORDER BY u.created_at DESC`,
-            [req.session.playerId]
-        );
-        
-        res.render('home', {
+        res.render('armies', {
             playerName: req.session.playerName,
             playerNick: req.session.playerNick,
-            armies: armies,
-            units: units
+            armies: armies
         });
     } catch (error) {
-        console.error('Home screen error:', error);
+        console.error('Armies page error:', error);
         res.status(500).send('Server error');
     }
 });

@@ -6,18 +6,10 @@
         <p>Explore the world and discover new territories.</p>
         <a href="/map" class="btn btn-primary">View Map</a>
     </div>
+    
+    <div class="card">
+        <h3>⚔️ Your Armies</h3>
+        <p>Command your armies and lead them to victory.</p>
+        <a href="/armies" class="btn btn-warning">Manage Armies</a>
+    </div>
 </div>
-
-<% if (armies.length > 0) { %>
-<h3 class="main-title">Active Armies</h3>
-<div class="grid armies-grid">
-    <% armies.slice(0, 3).forEach(function(army) { %>
-        <div class="card">
-            <h4><%= army.name %></h4>
-            <p>📍 Location: (<%= army.x_coord %>, <%= army.y_coord %>)</p>
-            <p>🏰 Realm: <%= army.realm_name %></p>
-            <a href="/armies/<%= army.id %>" class="btn btn-warning">Command Army</a>
-        </div>
-    <% }); %>
-</div>
-<% } %>
