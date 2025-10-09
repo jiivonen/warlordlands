@@ -1,0 +1,50 @@
+<h2 class="page-title">Player Profile</h2>
+
+<div class="profile-container">
+    <div class="profile-main-layout">
+        <div class="profile-section">
+            <h3>👤 Player Information</h3>
+            <div class="info-card">
+                <div class="info-item">
+                    <strong>Full Name:</strong> <%= playerName %>
+                </div>
+                <div class="info-item">
+                    <strong>Username:</strong> <%= playerNick %>
+                </div>
+                <div class="info-item">
+                    <strong>Email:</strong> <%= playerEmail %>
+                </div>
+            </div>
+        </div>
+
+        <div class="profile-section">
+            <% if (realms.length > 0) { %>
+                <h3>🏰 Your Realms</h3>
+                <div class="realms-grid">
+                    <% realms.forEach(function(realm) { %>
+                        <div class="realm-card">
+                            <h4><%= realm.name %></h4>
+                            <div class="realm-info">
+                                <div class="info-item">
+                                    <strong>Founded:</strong> <%= new Date(realm.created_at).toLocaleDateString() %>
+                                </div>
+                                <div class="info-item">
+                                    <strong>Armies:</strong> <%= realm.army_count || 0 %>
+                                </div>
+                                <div class="info-item">
+                                    <strong>Units:</strong> <%= realm.unit_count || 0 %>
+                                </div>
+                            </div>
+                        </div>
+                    <% }); %>
+                </div>
+            <% } else { %>
+                <h3>🏰 Your Realms</h3>
+                <div class="info-card">
+                    <p>You don't have any realms yet. Create your first realm to start building your empire!</p>
+                    <a href="/map" class="btn btn-primary">Explore the Map</a>
+                </div>
+            <% } %>
+        </div>
+    </div>
+</div>

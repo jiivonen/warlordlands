@@ -402,6 +402,97 @@ nav {
     margin-top: 1rem;
 }
 
+/* Profile Page Styles */
+.profile-container {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+}
+
+.profile-main-layout {
+    display: flex;
+    gap: 2rem;
+    align-items: flex-start;
+}
+
+.profile-main-layout .profile-section {
+    flex: 1;
+}
+
+.profile-section {
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 15px;
+    padding: 2rem;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    backdrop-filter: blur(10px);
+}
+
+.profile-section h3 {
+    color: #2c3e50;
+    margin-bottom: 1.5rem;
+    font-size: 1.3rem;
+    border-bottom: 2px solid #3498db;
+    padding-bottom: 0.5rem;
+}
+
+.info-card {
+    background: rgba(52, 152, 219, 0.1);
+    border-radius: 8px;
+    padding: 1.5rem;
+    border: 1px solid rgba(52, 152, 219, 0.2);
+}
+
+.info-item {
+    margin-bottom: 0.75rem;
+    padding: 0.5rem 0;
+    border-bottom: 1px solid rgba(52, 152, 219, 0.1);
+}
+
+.info-item:last-child {
+    border-bottom: none;
+    margin-bottom: 0;
+}
+
+.info-item strong {
+    color: #2c3e50;
+    display: inline-block;
+    min-width: 120px;
+}
+
+.realms-grid, .armies-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1.5rem;
+}
+
+.realm-card, .army-card {
+    background: rgba(255, 255, 255, 0.9);
+    border-radius: 8px;
+    padding: 1.5rem;
+    border: 1px solid rgba(52, 152, 219, 0.2);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.realm-card:hover, .army-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.realm-card h4, .army-card h4 {
+    color: #2c3e50;
+    margin-bottom: 1rem;
+    font-size: 1.2rem;
+}
+
+.realm-info, .army-info {
+    margin-bottom: 1rem;
+}
+
+.btn-sm {
+    padding: 0.375rem 0.75rem;
+    font-size: 0.875rem;
+}
+
 /* Responsive Design */
 @media (max-width: 768px) {
     .nav-menu {
@@ -419,5 +510,18 @@ nav {
 
     .container {
         padding: 10px;
+    }
+    
+    .realms-grid, .armies-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .profile-section {
+        padding: 1.5rem;
+    }
+    
+    .profile-main-layout {
+        flex-direction: column;
+        gap: 1rem;
     }
 }

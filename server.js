@@ -267,6 +267,48 @@ app.get('/armies', requireAuth, async (req, res) => {
     }
 });
 
+// Profile page
+app.get('/profile', requireAuth, async (req, res) => {
+    try {
+        // Get player information
+        const [playerData] = await pool.execute(
+            'SELECT id, nick, fullname, email FROM player WHERE id = ?',
+            [req.session.playerId]
+        );
+        
+        if (playerData.length === 0) {
+            return res.status(404).send('Player not found');
+        }
+        
+        const player = playerData[0];
+        
+        // Get player's realms
+        const [realms] = await pool.execute(
+            `SELECT r.id, r.name, r.created_at,
+                    COUNT(DISTINCT a.id) as army_count,
+                    COUNT(DISTINCT u.id) as unit_count
+             FROM realm r
+             LEFT JOIN army a ON r.id = a.realm_id
+             LEFT JOIN unit u ON r.id = u.realm_id
+             WHERE r.player_id = ?
+             GROUP BY r.id, r.name, r.created_at
+             ORDER BY r.created_at DESC`,
+            [req.session.playerId]
+        );
+        
+        res.render('profile', {
+            playerId: player.id,
+            playerName: player.fullname,
+            playerNick: player.nick,
+            playerEmail: player.email,
+            realms: realms
+        });
+    } catch (error) {
+        console.error('Profile page error:', error);
+        res.status(500).send('Server error');
+    }
+});
+
 
 // Map API endpoint
 app.get('/api/map/data', requireAuth, async (req, res) => {
