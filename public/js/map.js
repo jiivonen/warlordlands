@@ -52,7 +52,7 @@ async function loadMapData() {
         if (response.ok) {
             mapData = await response.json();
             renderMap();
-            centerOnPlayerArmies();
+            // Removed automatic centering to prevent page jumping
         } else {
             showNotification('Failed to load map data', 'danger');
         }
