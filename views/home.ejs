@@ -1,15 +1,55 @@
-<h2 class="page-title">Welcome, <%= playerName %>!</h2>
+<h2 class="page-title">World Map</h2>
 
-<div class="grid">
-    <div class="card">
-        <h3>🗺️ World Map</h3>
-        <p>Explore the world and discover new territories.</p>
-        <a href="/map" class="btn btn-primary">View Map</a>
+<div class="map-container">
+    <!-- Notification system -->
+    <div id="notificationContainer" class="notification-container">
+        <div id="notificationMessage" class="alert notification-message"></div>
     </div>
     
-    <div class="card">
-        <h3>⚔️ Your Armies</h3>
-        <p>Command your armies and lead them to victory.</p>
-        <a href="/armies" class="btn btn-warning">Manage Armies</a>
+    <div class="map-controls">
+        <button id="zoomIn" class="btn btn-primary">🔍+</button>
+        <button id="zoomOut" class="btn btn-primary">🔍-</button>
+        <button id="centerMap" class="btn btn-warning">🎯 Center</button>
+        <div id="tileInfo" class="coordinates-display tile-info">
+            <div id="tileDetails"></div>
+        </div>
+    </div>
+    
+    <div class="map-viewport">
+        <div id="mapGrid" class="map-grid"></div>
+    </div>
+    
+    <div class="map-legend">
+        <h4>🗺️ Terrain Legend</h4>
+        <div class="legend-item">
+            <div class="terrain-sample open"></div>
+            <span>Open</span>
+        </div>
+        <div class="legend-item">
+            <div class="terrain-sample forest">🌲</div>
+            <span>Forest</span>
+        </div>
+        <div class="legend-item">
+            <div class="terrain-sample mountains">⛰️</div>
+            <span>Mountains</span>
+        </div>
+        <div class="legend-item">
+            <div class="terrain-sample water"></div>
+            <span>Water</span>
+        </div>
+        <div class="legend-item">
+            <div class="terrain-sample desert">🏜️</div>
+            <span>Desert</span>
+        </div>
+        <div class="legend-item">
+            <div class="terrain-sample hills">🏔️</div>
+            <span>Hills</span>
+        </div>
+        <div class="legend-item">
+            <div class="terrain-sample unknown">❓</div>
+            <span>Unknown</span>
+        </div>
     </div>
 </div>
+
+<script src="/js/map.js"></script>

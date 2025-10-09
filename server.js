@@ -234,17 +234,13 @@ app.get('/logout', (req, res) => {
     res.redirect('/login');
 });
 
-// Home screen
-app.get('/home', requireAuth, async (req, res) => {
-    try {
-        res.render('home', {
-            playerName: req.session.playerName,
-            playerNick: req.session.playerNick
-        });
-    } catch (error) {
-        console.error('Home screen error:', error);
-        res.status(500).send('Server error');
-    }
+// Home screen (now the map page)
+app.get('/home', requireAuth, (req, res) => {
+    res.render('home', {
+        playerName: req.session.playerName,
+        playerNick: req.session.playerNick,
+        pageCSS: '/css/map.css'
+    });
 });
 
 // Armies page
@@ -271,14 +267,6 @@ app.get('/armies', requireAuth, async (req, res) => {
     }
 });
 
-// Map page
-app.get('/map', requireAuth, (req, res) => {
-    res.render('map', {
-        playerName: req.session.playerName,
-        playerNick: req.session.playerNick,
-        pageCSS: '/css/map.css'
-    });
-});
 
 // Map API endpoint
 app.get('/api/map/data', requireAuth, async (req, res) => {
