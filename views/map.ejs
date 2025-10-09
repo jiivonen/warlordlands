@@ -4,17 +4,28 @@
         <div id="notificationMessage" class="alert notification-message"></div>
     </div>
     
-    <div class="map-controls">
-        <button id="zoomIn" class="btn btn-primary">🔍+</button>
-        <button id="zoomOut" class="btn btn-primary">🔍-</button>
-        <button id="centerMap" class="btn btn-warning">🎯 Center</button>
-        <div id="tileInfo" class="coordinates-display tile-info">
-            <div id="tileDetails"></div>
+    <div class="map-layout">
+        <div class="map-main">
+            <div class="map-viewport">
+                <div id="mapGrid" class="map-grid"></div>
+            </div>
         </div>
-    </div>
-    
-    <div class="map-viewport">
-        <div id="mapGrid" class="map-grid"></div>
+        
+        <div class="map-sidebar">
+            <div class="map-controls">
+                <h4>🎮 Map Controls</h4>
+                <div class="control-buttons">
+                    <button id="zoomIn" class="btn btn-primary">🔍+</button>
+                    <button id="zoomOut" class="btn btn-primary">🔍-</button>
+                    <button id="centerMap" class="btn btn-warning">🎯 Center</button>
+                </div>
+            </div>
+            
+            <div id="tileInfo" class="tile-info">
+                <h4>📍 Selected Tile</h4>
+                <div id="tileDetails"></div>
+            </div>
+        </div>
     </div>
     
     <div class="map-legend">

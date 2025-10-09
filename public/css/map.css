@@ -6,12 +6,47 @@
     backdrop-filter: blur(10px);
 }
 
-.map-controls {
+.map-layout {
     display: flex;
-    gap: 1rem;
-    margin-bottom: 1rem;
-    align-items: center;
+    gap: 2rem;
+    align-items: flex-start;
+}
+
+.map-main {
+    flex: 1;
+    min-width: 0;
+}
+
+.map-sidebar {
+    width: 300px;
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.map-controls {
+    background: rgba(52, 152, 219, 0.1);
+    padding: 1rem;
+    border-radius: 8px;
+    border: 1px solid rgba(52, 152, 219, 0.2);
+}
+
+.map-controls h4 {
+    margin: 0 0 1rem 0;
+    color: #2c3e50;
+    font-size: 1.1rem;
+}
+
+.control-buttons {
+    display: flex;
+    gap: 0.5rem;
     flex-wrap: wrap;
+}
+
+.control-buttons .btn {
+    flex: 1;
+    min-width: 80px;
 }
 
 .coordinates-display {
@@ -209,10 +244,11 @@
 }
 
 .map-legend {
-    margin-top: 2rem;
-    padding: 1rem;
     background: rgba(52, 152, 219, 0.1);
     border-radius: 8px;
+    padding: 1rem;
+    border: 1px solid rgba(52, 152, 219, 0.2);
+    margin-top: 2rem;
 }
 
 .map-legend h4 {
@@ -263,16 +299,17 @@
 }
 
 .tile-info {
-    margin-top: 2rem;
-    padding: 1rem;
     background: rgba(255, 255, 255, 0.9);
     border-radius: 8px;
     border-left: 4px solid #3498db;
+    padding: 1rem;
+    min-height: 200px;
 }
 
 .tile-info h4 {
-    margin-bottom: 1rem;
+    margin: 0 0 1rem 0;
     color: #2c3e50;
+    font-size: 1.1rem;
 }
 
 .tile-detail {
@@ -300,9 +337,27 @@
 }
 
 @media (max-width: 768px) {
+    .map-layout {
+        flex-direction: column;
+        gap: 1rem;
+    }
+    
+    .map-sidebar {
+        width: 100%;
+        order: -1;
+    }
+    
     .map-controls {
         flex-direction: column;
         align-items: stretch;
+    }
+    
+    .control-buttons {
+        flex-direction: column;
+    }
+    
+    .control-buttons .btn {
+        flex: none;
     }
     
     .map-tile {
