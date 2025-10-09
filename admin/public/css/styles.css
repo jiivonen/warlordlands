@@ -58,6 +58,12 @@ body {
     border-radius: 3px;
 }
 
+/* Ensure the user icon matches menu text color */
+.nav .user-info .user-icon {
+    color: #ecf0f1;
+    font-size: 1.3rem;
+}
+
 .content {
     background: white;
     padding: 2rem;

@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><%= typeof title !== 'undefined' ? title : 'Warlordlands Admin' %></title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
     <link rel="stylesheet" href="/css/styles.css">
     <% if (typeof title !== 'undefined' && title.includes('Commands')) { %>
     <script src="/js/commands.js"></script>
@@ -32,7 +33,11 @@
         <a href="/admin/commands">Commands</a>
 
         <div class="user-info">
-            <%= userNick %> <a href="/logout">Logout</a>
+            <span class="me-2 user-icon" data-bs-toggle="tooltip" data-bs-placement="bottom" title="<%= userNick %>">
+                <i class="bi bi-person-circle" aria-hidden="true"></i>
+                <span class="visually-hidden">User</span>
+            </span>
+            <a href="/logout">Logout</a>
         </div>
     </div>
     <% } %>
@@ -44,5 +49,14 @@
     </div>
     
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+    // Initialize Bootstrap tooltips globally
+    document.addEventListener('DOMContentLoaded', function () {
+        var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+        tooltipTriggerList.forEach(function (tooltipTriggerEl) {
+            new bootstrap.Tooltip(tooltipTriggerEl);
+        });
+    });
+    </script>
 </body>
 </html>
