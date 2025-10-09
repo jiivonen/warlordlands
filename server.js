@@ -89,7 +89,7 @@ function requireAuth(req, res, next) {
 // Routes
 app.get('/', (req, res) => {
     if (req.session.playerId) {
-        res.redirect('/home');
+        res.redirect('/map');
     } else {
         res.redirect('/login');
     }
@@ -98,7 +98,7 @@ app.get('/', (req, res) => {
 // Login routes
 app.get('/login', (req, res) => {
     if (req.session.playerId) {
-        res.redirect('/home');
+        res.redirect('/map');
     } else {
         res.render('login', { 
             error: null, 
@@ -136,7 +136,7 @@ app.post('/login', async (req, res) => {
         req.session.playerId = player.id;
         req.session.playerNick = player.nick;
         req.session.playerName = player.fullname;
-        res.redirect('/home');
+        res.redirect('/map');
         
     } catch (error) {
         console.error('Login error:', error);
@@ -150,7 +150,7 @@ app.post('/login', async (req, res) => {
 // Registration routes
 app.get('/register', (req, res) => {
     if (req.session.playerId) {
-        res.redirect('/home');
+        res.redirect('/map');
     } else {
         res.render('register', { 
             error: null, 
@@ -218,7 +218,7 @@ app.post('/register', async (req, res) => {
         req.session.playerNick = nick;
         req.session.playerName = fullname;
         
-        res.redirect('/home');
+        res.redirect('/map');
         
     } catch (error) {
         console.error('Registration error:', error);
@@ -234,8 +234,8 @@ app.get('/logout', (req, res) => {
     res.redirect('/login');
 });
 
-// Home screen (now the map page)
-app.get('/home', requireAuth, (req, res) => {
+// Map page (main page)
+app.get('/map', requireAuth, (req, res) => {
     res.render('home', {
         playerName: req.session.playerName,
         playerNick: req.session.playerNick,
