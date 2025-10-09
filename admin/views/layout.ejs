@@ -10,36 +10,59 @@
     <% if (typeof title !== 'undefined' && title.includes('Commands')) { %>
     <script src="/js/commands.js"></script>
     <% } %>
+    <% if (typeof userNick === 'undefined') { %>
+    <nav class="navbar navbar-dark bg-dark">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="/admin">Warlordlands Admin</a>
+        </div>
+    </nav>
+    <% } %>
 </head>
 <body>
-    <div class="header">
-        <h1>Warlordlands Admin Panel</h1>
-    </div>
-    
     <% if (typeof userNick !== 'undefined' && typeof hideNav === 'undefined') { %>
-    <div class="nav">
-        <a href="/admin">Dashboard</a>
-        <a href="/admin/users">Admin Users</a>
-        <a href="/admin/player">Players</a>
-        <a href="/admin/realm">Realms</a>
-        <a href="/admin/unit_type">Unit Types</a>
-        <a href="/admin/keywords">Keywords</a>
-        <a href="/admin/unit_classes">Unit Classes</a>
-        <a href="/admin/terrain_types">Terrain Types</a>
-        <a href="/admin/map">Map Tiles</a>
-        <a href="/admin/army">Armies</a>
-        <a href="/admin/unit">Units</a>
-        <a href="/admin/game_turns">Game Turns</a>
-        <a href="/admin/commands">Commands</a>
-
-        <div class="user-info">
-            <span class="me-2 user-icon" data-bs-toggle="tooltip" data-bs-placement="bottom" title="<%= userNick %>">
-                <i class="bi bi-person-circle" aria-hidden="true"></i>
-                <span class="visually-hidden">User</span>
-            </span>
-            <a href="/logout">Logout</a>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="/admin">Warlordlands Admin</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#adminNavbar" aria-controls="adminNavbar" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="adminNavbar">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="gameAdminDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">Game Admin</a>
+                        <ul class="dropdown-menu" aria-labelledby="gameAdminDropdown">
+                            <li><a class="dropdown-item" href="/admin/users">Admin Users</a></li>
+                            <li><a class="dropdown-item" href="/admin/player">Players</a></li>
+                            <li><a class="dropdown-item" href="/admin/realm">Realms</a></li>
+                            <li><a class="dropdown-item" href="/admin/army">Armies</a></li>
+                            <li><a class="dropdown-item" href="/admin/unit">Units</a></li>
+                            <li><a class="dropdown-item" href="/admin/game_turns">Game Turns</a></li>
+                            <li><a class="dropdown-item" href="/admin/commands">Commands</a></li>
+                        </ul>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="metaDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">Meta Information</a>
+                        <ul class="dropdown-menu" aria-labelledby="metaDropdown">
+                            <li><a class="dropdown-item" href="/admin/unit_type">Unit Types</a></li>
+                            <li><a class="dropdown-item" href="/admin/unit_classes">Unit Classes</a></li>
+                            <li><a class="dropdown-item" href="/admin/keywords">Keywords</a></li>
+                            <li><a class="dropdown-item" href="/admin/terrain_types">Terrain Types</a></li>
+                            <li><a class="dropdown-item" href="/admin/map">Map Tiles</a></li>
+                        </ul>
+                    </li>
+                </ul>
+                <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+                    <li class="nav-item d-flex align-items-center me-2">
+                        <span class="user-icon text-white" data-bs-toggle="tooltip" data-bs-placement="bottom" title="<%= userNick %>">
+                            <i class="bi bi-person-circle" aria-hidden="true"></i>
+                            <span class="visually-hidden">User</span>
+                        </span>
+                    </li>
+                    <li class="nav-item"><a class="nav-link" href="/logout">Logout</a></li>
+                </ul>
+            </div>
         </div>
-    </div>
+    </nav>
     <% } %>
     
     <div class="container">
