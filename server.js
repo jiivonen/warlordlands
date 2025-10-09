@@ -236,7 +236,7 @@ app.get('/logout', (req, res) => {
 
 // Map page (main page)
 app.get('/map', requireAuth, (req, res) => {
-    res.render('home', {
+    res.render('map', {
         playerName: req.session.playerName,
         playerNick: req.session.playerNick,
         pageCSS: '/css/map.css'
